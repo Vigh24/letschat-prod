@@ -24,10 +24,6 @@ export function Softphone({ activeView }: { activeView?: string }) {
     simulateIncomingCall,
   } = useTwilioVoice();
 
-  if (!twilioConfig.isEnabled) {
-    return null;
-  }
-
   const [isOpen, setIsOpen] = useState(false);
   const [dialInput, setDialInput] = useState('');
   const [showDtmfOverlay, setShowDtmfOverlay] = useState(false);
@@ -38,6 +34,17 @@ export function Softphone({ activeView }: { activeView?: string }) {
       setIsOpen(true);
     }
   }, [callState, direction]);
+
+  // Close the dialer if the user navigates away from workspace pages while idle
+  useEffect(() => {
+    if (callState === 'idle' && activeView && activeView !== 'inbox' && activeView !== 'tickets') {
+      setIsOpen(false);
+    }
+  }, [activeView, callState]);
+
+  if (!twilioConfig.isEnabled) {
+    return null;
+  }
 
   const handleDialClick = (val: string) => {
     if (callState === 'active') {
@@ -76,13 +83,6 @@ export function Softphone({ activeView }: { activeView?: string }) {
         return { label: 'Offline', color: 'bg-zinc-400 dark:bg-zinc-650 border-white/[0.04] text-zinc-500 dark:text-zinc-450' };
     }
   };
-
-  // Close the dialer if the user navigates away from workspace pages while idle
-  useEffect(() => {
-    if (callState === 'idle' && activeView && activeView !== 'inbox' && activeView !== 'tickets') {
-      setIsOpen(false);
-    }
-  }, [activeView, callState]);
 
   const regStatus = getRegStatusDetails();
 

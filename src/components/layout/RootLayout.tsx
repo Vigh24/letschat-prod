@@ -22,9 +22,6 @@ export function RootLayout() {
   const isCsatPage = params.get('csat') === 'true'
   const csatConvId = params.get('convId')
   const csatSig = params.get('sig') || ''
-  if (isCsatPage && csatConvId) {
-    return <CsatFormView convId={csatConvId} sig={csatSig} />
-  }
 
   const [session, setSession] = useState<any>(null)
   const [authLoading, setAuthLoading] = useState(true)
@@ -124,6 +121,12 @@ export function RootLayout() {
     }
   }, [setBadgeCounts])
 
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  if (isCsatPage && csatConvId) {
+    return <CsatFormView convId={csatConvId} sig={csatSig} />
+  }
+
   const handleLogOut = async () => {
     const { supabase, isSupabaseConfigured } = await import('@/lib/supabase')
     if (isSupabaseConfigured) await supabase.auth.signOut()
@@ -147,8 +150,6 @@ export function RootLayout() {
   }
 
   const activeView = getActiveViewFromPath(window.location.pathname)
-
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <TwilioVoiceProvider>
