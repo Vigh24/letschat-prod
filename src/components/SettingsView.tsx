@@ -167,7 +167,7 @@ function UserRoleSelect({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-semibold theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+        className="flex items-center gap-1 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span>{currentLabel}</span>
         {!disabled && <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />}
@@ -185,7 +185,7 @@ function UserRoleSelect({
                   onChange(opt.value as 'admin' | 'agent' | 'supervisor');
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-2.5 py-1 rounded text-[10px] font-bold uppercase transition-all cursor-pointer flex items-center justify-between ${
+                className={`w-full text-left px-2.5 py-1.5 rounded text-[10px] font-bold uppercase transition-all cursor-pointer flex items-center justify-between ${
                   isSelected 
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold' 
                     : 'theme-text-secondary hover:bg-white/[0.04] hover:theme-text-main'
@@ -237,7 +237,7 @@ function UserAccessScopeSelect({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-semibold theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left min-w-[125px] justify-between uppercase"
+        className="flex items-center gap-1.5 bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left min-w-[125px] justify-between"
       >
         <span className="flex items-center gap-1.5">
           {scope === 'all' ? <Eye className="h-3.5 w-3.5 text-slate-400" /> : <EyeOff className="h-3.5 w-3.5 text-slate-400" />}

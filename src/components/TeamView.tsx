@@ -50,7 +50,7 @@ function TeamRoleSelect({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-semibold theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+        className="flex items-center justify-between w-full bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] rounded-lg px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span>{currentLabel}</span>
         {!disabled && <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />}
@@ -120,7 +120,7 @@ function TeamAccessScopeSelect({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full bg-white/[0.03] border border-white/[0.06] rounded-lg pl-8! pr-2.5 py-1.5 text-[11px] font-semibold theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+        className="flex items-center justify-between w-full bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/[0.06] rounded-lg pl-8! pr-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider theme-text-secondary focus:outline-none focus:border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="flex items-center gap-1.5">
           <span>{currentLabel}</span>
@@ -336,8 +336,8 @@ export function TeamView() {
         )}
 
         {/* Team Members List */}
-        <div className="rounded-xl border theme-border theme-bg-secondary overflow-hidden shadow-sm">
-          <div className="grid grid-cols-12 gap-4 bg-zinc-100/50 dark:bg-white/[0.02] px-5 py-3 text-[9px] font-bold uppercase tracking-wider theme-text-muted border-b theme-border">
+        <div className="rounded-2xl border theme-border bg-white dark:bg-zinc-900/35 overflow-hidden shadow-sm">
+          <div className="grid grid-cols-12 gap-4 bg-zinc-50 dark:bg-white/[0.015] px-5 py-3.5 text-[9px] font-bold uppercase tracking-wider theme-text-muted border-b theme-border font-display">
             <div className="col-span-4">Team Member</div>
             <div className="col-span-2">Status</div>
             <div className="col-span-3">Workspace Role</div>

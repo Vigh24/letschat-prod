@@ -136,37 +136,45 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Greeting */}
         <div className="mb-8">
-          <h1 className="text-xl font-bold theme-text-main tracking-tight">
-            {greeting}, {currentAgent.full_name?.split(' ')[0] || 'there'}
+          <h1 className="text-2xl font-extrabold font-display theme-text-main tracking-tight leading-tight">
+            {greeting}, <span className="text-emerald-400">{currentAgent.full_name?.split(' ')[0] || 'there'}</span>
           </h1>
-          <p className="text-sm theme-text-muted mt-1">{today}</p>
+          <p className="text-[10px] theme-text-muted mt-1.5 font-black tracking-widest uppercase select-none">{today}</p>
         </div>
 
         {/* KPI Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
-          <div className="rounded-xl border theme-border p-4 theme-bg-secondary border-l-[3px] border-l-blue-500 transition-shadow hover:shadow-md">
-            <div className="flex items-center justify-between mb-2"><Inbox className="h-4 w-4 text-blue-500" /></div>
-            <p className="text-2xl font-bold theme-text-main tracking-tight">{openCount}</p>
-            <p className="text-xs theme-text-muted font-medium">Open Tickets</p>
-            {urgentCount > 0 && <p className="text-[10px] text-red-400 mt-1 font-semibold">{urgentCount} urgent</p>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <div className="group rounded-2xl border border-white/[0.04] bg-gradient-to-br from-blue-500/[0.02] to-transparent p-5 transition-all duration-300 hover:scale-[1.02] hover:border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/[0.02]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400">Open Tickets</span>
+              <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform duration-300"><Inbox className="h-4 w-4" /></div>
+            </div>
+            <p className="text-3xl font-extrabold font-display theme-text-main tracking-tight leading-none">{openCount}</p>
+            {urgentCount > 0 && <p className="text-[10px] text-rose-500 mt-2.5 font-bold flex items-center gap-1"><span>●</span> {urgentCount} urgent</p>}
           </div>
-          <div className="rounded-xl border theme-border p-4 theme-bg-secondary border-l-[3px] border-l-amber-500 transition-shadow hover:shadow-md">
-            <div className="flex items-center justify-between mb-2"><Clock className="h-4 w-4 text-amber-500" /></div>
-            <p className="text-2xl font-bold theme-text-main tracking-tight">{pendingCount + awaitingCount}</p>
-            <p className="text-xs theme-text-muted font-medium">Needs Attention</p>
-            <p className="text-[10px] theme-text-muted mt-1">{pendingCount} pending · {awaitingCount} awaiting</p>
+          <div className="group rounded-2xl border border-white/[0.04] bg-gradient-to-br from-amber-500/[0.02] to-transparent p-5 transition-all duration-300 hover:scale-[1.02] hover:border-amber-500/20 hover:shadow-lg hover:shadow-amber-500/[0.02]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400">Needs Attention</span>
+              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/10 text-amber-400 group-hover:scale-110 transition-transform duration-300"><Clock className="h-4 w-4" /></div>
+            </div>
+            <p className="text-3xl font-extrabold font-display theme-text-main tracking-tight leading-none">{pendingCount + awaitingCount}</p>
+            <p className="text-[9px] theme-text-muted mt-2.5 font-semibold">{pendingCount} pending · {awaitingCount} awaiting</p>
           </div>
-          <div className="rounded-xl border theme-border p-4 theme-bg-secondary border-l-[3px] border-l-emerald-500 transition-shadow hover:shadow-md">
-            <div className="flex items-center justify-between mb-2"><TrendingUp className="h-4 w-4 text-emerald-500" /></div>
-            <p className="text-2xl font-bold theme-text-main tracking-tight">{resolutionRate}%</p>
-            <p className="text-xs theme-text-muted font-medium">Resolution Rate</p>
-            <p className="text-[10px] theme-text-muted mt-1">{resolvedToday} resolved today</p>
+          <div className="group rounded-2xl border border-white/[0.04] bg-gradient-to-br from-emerald-500/[0.02] to-transparent p-5 transition-all duration-300 hover:scale-[1.02] hover:border-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/[0.02]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400">Resolution Rate</span>
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform duration-300"><TrendingUp className="h-4 w-4" /></div>
+            </div>
+            <p className="text-3xl font-extrabold font-display theme-text-main tracking-tight leading-none">{resolutionRate}%</p>
+            <p className="text-[9px] theme-text-muted mt-2.5 font-semibold">{resolvedToday} resolved today</p>
           </div>
-          <div className="rounded-xl border theme-border p-4 theme-bg-secondary border-l-[3px] border-l-violet-500 transition-shadow hover:shadow-md">
-            <div className="flex items-center justify-between mb-2"><Bot className="h-4 w-4 text-violet-500" /></div>
-            <p className="text-2xl font-bold theme-text-main tracking-tight">{csatScores.count}</p>
-            <p className="text-xs theme-text-muted font-medium">CSAT Responses</p>
-            <p className="text-[10px] theme-text-muted mt-1">{csatScores.avg > 0 ? `Avg: ${csatScores.avg}/5` : 'No ratings yet'}</p>
+          <div className="group rounded-2xl border border-white/[0.04] bg-gradient-to-br from-violet-500/[0.02] to-transparent p-5 transition-all duration-300 hover:scale-[1.02] hover:border-violet-500/20 hover:shadow-lg hover:shadow-violet-500/[0.02]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400">CSAT Responses</span>
+              <div className="p-2 rounded-xl bg-violet-500/10 border border-violet-500/10 text-violet-400 group-hover:scale-110 transition-transform duration-300"><Bot className="h-4 w-4" /></div>
+            </div>
+            <p className="text-3xl font-extrabold font-display theme-text-main tracking-tight leading-none">{csatScores.count}</p>
+            <p className="text-[9px] theme-text-muted mt-2.5 font-semibold">{csatScores.avg > 0 ? `Avg: ${csatScores.avg}/5` : 'No ratings yet'}</p>
           </div>
         </div>
 
@@ -293,16 +301,16 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 mb-8 flex-wrap">
+        <div className="flex items-center gap-3 mb-8 flex-wrap">
           <button onClick={() => onNavigate('inbox')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
-          ><Plus className="h-3.5 w-3.5" />New Chat</button>
+            className="flex items-center gap-2 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] transition-all hover:scale-105 hover:border-emerald-500/15 hover:text-emerald-450 font-bold px-4 py-2.5 text-xs text-zinc-300 shadow-sm cursor-pointer"
+          ><Plus className="h-4 w-4" />New Chat</button>
           <button onClick={() => onNavigate('inbox')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
-          ><Inbox className="h-3.5 w-3.5" />View Inbox</button>
+            className="flex items-center gap-2 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] transition-all hover:scale-105 hover:border-emerald-500/15 hover:text-emerald-450 font-bold px-4 py-2.5 text-xs text-zinc-300 shadow-sm cursor-pointer"
+          ><Inbox className="h-4 w-4" />View Inbox</button>
           <button onClick={() => onNavigate('analytics')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
-          ><BarChart3 className="h-3.5 w-3.5" />Analytics</button>
+            className="flex items-center gap-2 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] transition-all hover:scale-105 hover:border-emerald-500/15 hover:text-emerald-450 font-bold px-4 py-2.5 text-xs text-zinc-300 shadow-sm cursor-pointer"
+          ><BarChart3 className="h-4 w-4" />Analytics</button>
         </div>
 
         {/* Recent Conversations */}
@@ -320,44 +328,46 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
               <p className="text-xs theme-text-muted mt-1">Conversations will appear when customers message via WhatsApp</p>
             </div>
           ) : (
-            <div className="rounded-xl border theme-border theme-bg-secondary overflow-x-auto">
-              <div className="grid grid-cols-12 gap-2 sm:gap-4 border-b theme-border px-3 sm:px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider theme-text-muted min-w-[600px]">
+            <div className="rounded-2xl border theme-border theme-bg-secondary overflow-hidden shadow-xl">
+              <div className="grid grid-cols-12 gap-2 sm:gap-4 border-b theme-border px-5 py-3.5 text-[9px] font-black uppercase tracking-wider theme-text-muted select-none">
                 <div className="col-span-1">Ticket</div>
                 <div className="col-span-4">Contact</div>
                 <div className="col-span-2">Status</div>
                 <div className="col-span-2">Priority</div>
                 <div className="col-span-3 text-right">Updated</div>
               </div>
-              {recentConversations.map((conv) => {
-                const tier = (conv.contact?.metadata?.account_tier as CustomerTier) ?? 'standard';
-                return (
-                  <div key={conv.id} onClick={() => { onSelectConversation(conv.id); onNavigate('inbox'); }}
-                    className="grid grid-cols-12 gap-2 sm:gap-4 border-b last:border-b-0 theme-border px-3 sm:px-5 py-3 text-xs items-center cursor-pointer hover:theme-bg-hover transition-colors"
-                  >
-                    <div className="col-span-1"><TicketBadge ticketId={conv.ticket_id} /></div>
-                    <div className="col-span-4 flex items-center gap-2.5 min-w-0">
-                      {conv.contact ? (
-                        <Avatar size="sm">
-                          {conv.contact.avatar_url ? <AvatarImage src={conv.contact.avatar_url} alt={conv.contact.full_name || ''} /> : null}
-                          <AvatarFallback>{(conv.contact.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <div className="h-6 w-6 rounded-full bg-zinc-100 dark:bg-white/[0.06] flex items-center justify-center text-[10px] font-semibold text-slate-400">?</div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="font-semibold theme-text-main truncate">{conv.contact?.full_name ?? 'Unknown'}</p>
-                        <p className="text-[10px] theme-text-muted truncate mt-0.5">{conv.subject ?? 'No subject'}</p>
+              <div className="divide-y theme-border">
+                {recentConversations.map((conv) => {
+                  const tier = (conv.contact?.metadata?.account_tier as CustomerTier) ?? 'standard';
+                  return (
+                    <div key={conv.id} onClick={() => { onSelectConversation(conv.id); onNavigate('inbox'); }}
+                      className="grid grid-cols-12 gap-2 sm:gap-4 px-5 py-4 text-xs items-center cursor-pointer hover:bg-white/[0.015] dark:hover:bg-white/[0.01] transition-all duration-200"
+                    >
+                      <div className="col-span-1"><TicketBadge ticketId={conv.ticket_id} /></div>
+                      <div className="col-span-4 flex items-center gap-3 min-w-0">
+                        {conv.contact ? (
+                          <Avatar size="sm">
+                            {conv.contact.avatar_url ? <AvatarImage src={conv.contact.avatar_url || undefined} alt={conv.contact.full_name || ''} /> : null}
+                            <AvatarFallback>{(conv.contact.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-white/[0.06] flex items-center justify-center text-[10px] font-semibold text-slate-400">?</div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-bold theme-text-main truncate">{conv.contact?.full_name ?? 'Unknown'}</p>
+                          <p className="text-[10px] theme-text-muted truncate mt-0.5">{conv.subject ?? 'No subject'}</p>
+                        </div>
+                        {tier !== 'standard' && tier !== 'free' && <TierBadge tier={tier} />}
                       </div>
-                      {tier !== 'standard' && tier !== 'free' && <TierBadge tier={tier} />}
+                      <div className="col-span-2"><StatusBadge status={conv.status} /></div>
+                      <div className="col-span-2"><PriorityBadge priority={conv.priority} /></div>
+                      <div className="col-span-3 text-right text-[10px] theme-text-muted font-mono">
+                        {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
+                      </div>
                     </div>
-                    <div className="col-span-2"><StatusBadge status={conv.status} /></div>
-                    <div className="col-span-2"><PriorityBadge priority={conv.priority} /></div>
-                    <div className="col-span-3 text-right text-[10px] theme-text-muted font-mono">
-                      {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

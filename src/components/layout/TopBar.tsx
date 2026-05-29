@@ -30,21 +30,23 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const { title, icon: ViewIcon } = viewMeta[activeView] ?? viewMeta.dashboard
 
   return (
-    <div className="flex h-11 shrink-0 items-center justify-between border-b theme-border theme-bg-secondary px-3 sm:px-6">
-      <div className="min-w-0 flex items-center gap-2.5">
-        <button onClick={onMenuClick} className="lg:hidden rounded-lg p-1.5 theme-text-muted hover:theme-text-main hover:bg-white/[0.04] transition-colors -ml-1 cursor-pointer" title="Toggle sidebar">
-          <Menu className="h-4 w-4" />
+    <div className="flex h-12 shrink-0 items-center justify-between border-b theme-border theme-bg-secondary px-4 sm:px-6">
+      <div className="min-w-0 flex items-center gap-3">
+        <button onClick={onMenuClick} className="lg:hidden rounded-xl p-1.5 theme-text-muted hover:theme-text-main hover:bg-white/[0.03] transition-all cursor-pointer -ml-1" title="Toggle sidebar">
+          <Menu className="h-4.5 w-4.5" />
         </button>
         <ViewIcon className="h-4 w-4 theme-text-muted hidden sm:block" />
         <div>
-          <h1 className="font-semibold theme-text-main text-[13px] leading-tight">{title}</h1>
+          <h1 className="font-extrabold font-display theme-text-main text-[11px] uppercase tracking-wider leading-none">{title}</h1>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0 ml-4">
         <button onClick={toggleTheme}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border theme-border theme-text-muted hover:theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-xl border theme-border theme-text-muted hover:theme-text-main hover:theme-bg-hover transition-all cursor-pointer bg-white/[0.01] hover:scale-105 active:scale-95"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-        >{theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}</button>
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-500" />}
+        </button>
       </div>
     </div>
   )

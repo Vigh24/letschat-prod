@@ -39,30 +39,34 @@ function ChannelCard({ channel, isPrimary }: { channel: ChannelIntegration; isPr
   const isConnected = channel.status === 'connected';
 
   return (
-    <div className={`glass-card p-5 transition-all duration-200 group ${isPrimary ? 'ring-1 ring-emerald-500/25 shadow-md shadow-emerald-500/5' : ''} ${showConfig ? 'ring-1 ring-zinc-200 dark:ring-zinc-800' : ''}`}>
+    <div className={`rounded-2xl border transition-all duration-250 group ${
+      isPrimary 
+        ? 'border-emerald-500/35 bg-white dark:bg-zinc-900/40 shadow-sm shadow-emerald-500/[0.015]' 
+        : 'theme-border bg-white dark:bg-zinc-900/25 hover:bg-slate-50 dark:hover:bg-zinc-900/35 hover:shadow-md'
+    } p-5 ${showConfig ? 'shadow-md border-slate-350 dark:border-white/10' : ''}`}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3.5">
-          <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${meta.gradient} border ${meta.border} flex items-center justify-center text-xl shadow-sm`}>
+          <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${meta.gradient} border ${meta.border} flex items-center justify-center text-xl shadow-sm shrink-0`}>
             {meta.icon}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold theme-text-main leading-tight">{channel.name}</h3>
-              {isPrimary && <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider border border-emerald-500/15">Primary</span>}
+              <h3 className="text-sm font-bold theme-text-main leading-tight font-display">{channel.name}</h3>
+              {isPrimary && <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider border border-emerald-500/15 font-mono">Primary</span>}
             </div>
-            <p className="text-[11px] theme-text-muted mt-1 leading-normal">{channel.description}</p>
+            <p className="text-[11px] theme-text-muted mt-1 leading-normal font-medium">{channel.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className={`flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-bold ${
+          <span className={`flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider font-mono ${
             isConnected 
               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15' 
               : channel.status === 'error' 
                 ? 'bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/15' 
-                : 'bg-zinc-100 dark:bg-white/[0.02] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-white/[0.04]'
+                : 'bg-zinc-150 dark:bg-white/[0.02] text-zinc-500 dark:text-zinc-400 border border-zinc-250 dark:border-white/[0.04]'
           }`}>
-            {isConnected ? <CheckCircle className="h-3 w-3" /> : channel.status === 'error' ? <AlertTriangle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-            {channel.status.charAt(0).toUpperCase() + channel.status.slice(1)}
+            {isConnected ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : channel.status === 'error' ? <AlertTriangle className="h-3 w-3 text-red-505" /> : <XCircle className="h-3 w-3 text-zinc-400" />}
+            {channel.status}
           </span>
         </div>
       </div>
@@ -75,10 +79,10 @@ function ChannelCard({ channel, isPrimary }: { channel: ChannelIntegration; isPr
             { label: 'Today', value: channel.stats.messages_today.toString(), icon: TrendingUp },
             { label: 'Avg Response', value: channel.stats.avg_response_time, icon: Clock },
           ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="rounded-xl bg-zinc-50/50 dark:bg-white/[0.01] border theme-border p-3">
+            <div key={label} className="rounded-xl bg-slate-50/40 dark:bg-white/[0.01] border theme-border p-3.5 hover:shadow-sm transition-all duration-150">
               <Icon className="h-3.5 w-3.5 theme-text-muted mb-1" />
-              <p className="text-sm font-bold theme-text-main tracking-tight leading-tight">{value}</p>
-              <p className="text-[9px] theme-text-muted mt-0.5 font-medium">{label}</p>
+              <p className="text-sm font-bold theme-text-main tracking-tight leading-tight font-display">{value}</p>
+              <p className="text-[9px] theme-text-muted mt-0.5 font-bold uppercase tracking-wider">{label}</p>
             </div>
           ))}
         </div>
@@ -102,10 +106,10 @@ function ChannelCard({ channel, isPrimary }: { channel: ChannelIntegration; isPr
 
       {showConfig && (
         <div className="mt-4 pt-4 border-t theme-border space-y-3 animate-fade-in">
-          <p className="text-xs font-bold theme-text-secondary uppercase tracking-wider">Channel Configuration</p>
+          <p className="text-xs font-bold theme-text-secondary uppercase tracking-wider font-display">Channel Configuration</p>
           {Object.entries(channel.config || {}).filter(([, v]) => v).map(([key, value]) => (
             <div key={key} className="flex items-center justify-between">
-              <span className="text-xs theme-text-muted capitalize">{key.replace(/_/g, ' ')}</span>
+              <span className="text-xs theme-text-muted capitalize font-medium">{key.replace(/_/g, ' ')}</span>
               <span className="text-xs theme-text-secondary font-mono bg-zinc-50 dark:bg-white/[0.01] border theme-border px-2 py-0.5 rounded">
                 {Array.isArray(value) ? value.join(', ') : String(value)}
               </span>
@@ -235,8 +239,8 @@ export function ChannelsView() {
         </div>
 
         {/* How WhatsApp Ticketing Works */}
-        <div className="glass-card p-5">
-          <h3 className="text-xs font-bold theme-text-main mb-4 uppercase tracking-wider">How WhatsApp Ticketing Works</h3>
+        <div className="rounded-2xl border theme-border bg-white dark:bg-zinc-900/35 p-5 shadow-sm">
+          <h3 className="text-xs font-bold theme-text-main mb-4 uppercase tracking-wider font-display">How WhatsApp Ticketing Works</h3>
           <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
             {[
               { icon: '📱', label: 'WhatsApp Message', color: 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
@@ -246,7 +250,7 @@ export function ChannelsView() {
               { icon: '✅', label: 'Customer Reply', color: 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
             ].map((step, i, arr) => (
               <div key={i} className="flex items-center gap-2 shrink-0">
-                <div className={`w-32 rounded-xl bg-gradient-to-br ${step.color.split(' ')[0]} ${step.color.split(' ')[1]} border ${step.color.split(' ')[2]} p-3.5 shadow-sm text-center`}>
+                <div className={`w-32 rounded-2xl bg-gradient-to-br ${step.color.split(' ')[0]} ${step.color.split(' ')[1]} border ${step.color.split(' ')[2]} p-3.5 shadow-sm text-center`}>
                   <span className="text-xl">{step.icon}</span>
                   <p className={`text-[10px] font-bold mt-1.5 leading-tight ${step.color.split(' ')[3]} ${step.color.split(' ')[4] || ''}`}>{step.label}</p>
                 </div>

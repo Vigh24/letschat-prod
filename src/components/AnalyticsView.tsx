@@ -150,7 +150,7 @@ function BarHorizontal({ label, value, pct, color, icon }: { label: string; valu
         <span className="text-xs theme-text-secondary flex items-center gap-1.5">{icon && <span>{icon}</span>}{label}</span>
         <span className="text-xs font-semibold theme-text-main">{value.toLocaleString()} <span className="theme-text-muted font-normal">({pct.toFixed(1)}%)</span></span>
       </div>
-      <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
+      <div className="h-2 rounded-full bg-zinc-200/50 dark:bg-white/[0.04] overflow-hidden">
         <div className={`h-full rounded-full ${color} transition-all duration-700 group-hover:opacity-80`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -731,22 +731,21 @@ export function AnalyticsView() {
           )}
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
-          {statsCards.map(({ label, value, change, positive, icon: Icon, color }) => (
-            <div key={label} className="glass-card p-4 shimmer-overlay hover:scale-[1.01] transition-transform duration-200">
+          {statsCards.map(({ label, value, change, positive, icon: Icon }) => (
+            <div key={label} className="group rounded-2xl border border-white/[0.04] bg-gradient-to-br from-white/[0.01] to-transparent p-5 transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1] hover:shadow-lg">
               <div className="flex items-center justify-between mb-3">
-                <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${color.split(' ')[0]} ${color.split(' ')[1]} border ${color.split(' ')[4]} flex items-center justify-center`}>
-                  <Icon className={`h-4 w-4 ${color.split(' ')[2]} ${color.split(' ')[3]}`} />
+                <div className={`p-2 rounded-xl bg-white/[0.04] border border-white/[0.04] flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className="h-4 w-4" />
                 </div>
                 {value !== '—' && (
-                  <span className={`flex items-center gap-0.5 text-[10px] font-bold ${positive ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                  <span className={`flex items-center gap-0.5 text-[10px] font-bold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
                     {change}
                   </span>
                 )}
               </div>
-              <p className="text-xl font-bold theme-text-main tracking-tight">{value}</p>
-              <p className="text-[10px] theme-text-muted mt-1 uppercase tracking-wider font-semibold">{label}</p>
+              <p className="text-2xl font-extrabold font-display theme-text-main tracking-tight leading-none">{value}</p>
+              <p className="text-[10px] theme-text-muted mt-2.5 uppercase tracking-wider font-bold">{label}</p>
             </div>
           ))}
         </div>
@@ -771,7 +770,7 @@ export function AnalyticsView() {
                     <span className="w-12 text-[11px] font-semibold theme-text-secondary shrink-0">
                       {star} star{star !== 1 ? 's' : ''}
                     </span>
-                    <div className="flex-1 h-2.5 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="flex-1 h-2 rounded-full bg-zinc-200/50 dark:bg-white/[0.04] overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ${
                           star >= 4 ? 'bg-emerald-500' : star >= 3 ? 'bg-amber-500' : 'bg-red-500'

@@ -270,42 +270,47 @@ export function CopilotView() {
               </div>
 
               {result && (
-                <div className="glass-card overflow-hidden animate-fade-in border-emerald-500/15">
-                  <div className="border-b border-emerald-500/10 bg-emerald-500/5 dark:bg-emerald-500/[0.04] px-5 py-3.5 flex items-center justify-between">
-                    <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-emerald-500" /><span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">AI-Optimized Response</span></div>
-                    <div className="flex items-center gap-3">
-                      {result.processing_time_ms && <span className="text-[10px] theme-text-muted font-mono uppercase font-bold flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{result.processing_time_ms}ms</span>}
-                      <span className="rounded-full bg-emerald-500/10 border border-emerald-500/15 px-2.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 capitalize">{result.tone_applied}</span>
-                    </div>
-                  </div>
-                  <div className="p-5 space-y-4 select-text">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-bold theme-text-main uppercase tracking-wider">Primary Suggestion</p>
-                        <div className="flex items-center gap-2">
-                          <CopyButton text={result.rephrased ?? ''} />
-                          <button onClick={() => setDraft(result.rephrased ?? draft)} className="btn-primary text-[10px] py-1 px-2.5 h-7 shadow-none select-none">Use this</button>
-                        </div>
+                <div className="relative p-[1px] rounded-2xl bg-gradient-to-r from-violet-500 via-indigo-500 to-emerald-500 animate-fade-in shadow-[0_0_20px_rgba(99,102,241,0.12)]">
+                  <div className="rounded-[15px] overflow-hidden theme-bg-panel">
+                    <div className="border-b theme-border bg-gradient-to-r from-violet-500/5 via-indigo-500/5 to-emerald-500/5 px-5 py-3.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-violet-400 animate-pulse" />
+                        <span className="text-xs font-bold text-slate-800 dark:text-zinc-150 uppercase tracking-wider font-display">AI-Optimized Response</span>
                       </div>
-                      <div className="rounded-xl bg-emerald-500/5 dark:bg-emerald-500/[0.04] border border-emerald-500/10 px-4 py-3.5 text-sm theme-text-secondary leading-relaxed font-medium">{result.rephrased}</div>
+                      <div className="flex items-center gap-3">
+                        {result.processing_time_ms && <span className="text-[10px] theme-text-muted font-mono uppercase font-bold flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{result.processing_time_ms}ms</span>}
+                        <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 text-[9px] font-bold text-indigo-600 dark:text-indigo-400 capitalize">{result.tone_applied}</span>
+                      </div>
                     </div>
-                    {result.alternatives && result.alternatives.length > 0 && (
+                    <div className="p-5 space-y-4 select-text">
                       <div>
-                        <p className="text-xs font-bold theme-text-muted uppercase tracking-wider mb-2.5 select-none">Alternatives</p>
-                        <div className="space-y-2">
-                          {result.alternatives.map((alt: string, i: number) => (
-                            <div key={i} className="group flex items-start gap-2.5 rounded-xl border theme-border bg-zinc-50/50 dark:bg-white/[0.01] p-3.5">
-                              <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-zinc-150 dark:bg-white/[0.06] flex items-center justify-center text-[10px] font-bold theme-text-muted select-none">{i + 1}</span>
-                              <p className="flex-1 text-xs theme-text-secondary leading-relaxed">{alt}</p>
-                              <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity select-none">
-                                <CopyButton text={alt} />
-                                <button onClick={() => setDraft(alt)} className="rounded px-2 py-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-bold uppercase tracking-wider">Use</button>
-                              </div>
-                            </div>
-                          ))}
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-bold theme-text-main uppercase tracking-wider">Primary Suggestion</p>
+                          <div className="flex items-center gap-2">
+                            <CopyButton text={result.rephrased ?? ''} />
+                            <button onClick={() => setDraft(result.rephrased ?? draft)} className="btn-primary text-[10px] py-1 px-2.5 h-7 shadow-none select-none">Use this</button>
+                          </div>
                         </div>
+                        <div className="rounded-xl bg-violet-500/5 dark:bg-violet-500/[0.04] border border-violet-500/15 px-4 py-3.5 text-sm theme-text-secondary leading-relaxed font-medium">{result.rephrased}</div>
                       </div>
-                    )}
+                      {result.alternatives && result.alternatives.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold theme-text-muted uppercase tracking-wider mb-2.5 select-none">Alternatives</p>
+                          <div className="space-y-2">
+                            {result.alternatives.map((alt: string, i: number) => (
+                              <div key={i} className="group flex items-start gap-2.5 rounded-xl border theme-border bg-zinc-50/50 dark:bg-white/[0.01] p-3.5 hover:border-indigo-500/20 transition-all duration-150">
+                                <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-zinc-150 dark:bg-white/[0.06] flex items-center justify-center text-[10px] font-bold theme-text-muted select-none">{i + 1}</span>
+                                <p className="flex-1 text-xs theme-text-secondary leading-relaxed">{alt}</p>
+                                <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity select-none">
+                                  <CopyButton text={alt} />
+                                  <button onClick={() => setDraft(alt)} className="rounded px-2 py-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 font-bold uppercase tracking-wider">Use</button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

@@ -47,11 +47,11 @@ export function OnboardingFlow({ onDismiss }: { onDismiss: () => void }) {
         </div>
 
         <div className="text-center mb-2">
-          <p className="text-xs font-bold tracking-wider uppercase text-emerald-400/60 mb-3">
+          <p className="text-[9px] font-bold tracking-wider uppercase text-emerald-400/80 mb-3 font-mono">
             Step {step + 1} of {steps.length}
           </p>
-          <h2 className="text-sm font-bold theme-text-main mb-2">{current.title}</h2>
-          <p className="text-[11px] theme-text-muted leading-relaxed max-w-[280px] mx-auto">
+          <h2 className="text-sm font-bold theme-text-main mb-2 font-display tracking-tight">{current.title}</h2>
+          <p className="text-[11px] theme-text-muted leading-relaxed max-w-[280px] mx-auto font-medium">
             {current.description}
           </p>
         </div>
@@ -76,13 +76,13 @@ export function OnboardingFlow({ onDismiss }: { onDismiss: () => void }) {
             <>
               <button
                 onClick={() => setStep(s => Math.min(s + 1, steps.length - 1))}
-                className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-4 py-2.5 text-xs font-bold transition-all cursor-pointer shadow-md shadow-emerald-500/10"
+                className="flex-1 flex items-center justify-center gap-1.5 rounded-xl gradient-accent hover:opacity-95 text-white px-4 py-2.5 text-xs font-bold transition-all cursor-pointer shadow-md shadow-emerald-500/10 hover:scale-[1.01]"
               >
-                Next <ArrowRight className="h-3 w-3" />
+                Next <ArrowRight className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={onDismiss}
-                className="px-3 py-2.5 rounded-xl text-[10px] font-semibold theme-text-muted hover:theme-text-secondary hover:theme-bg-hover transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider theme-text-muted hover:theme-text-secondary hover:theme-bg-hover transition-all cursor-pointer"
               >
                 Skip
               </button>
@@ -90,9 +90,9 @@ export function OnboardingFlow({ onDismiss }: { onDismiss: () => void }) {
           ) : (
             <button
               onClick={onDismiss}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-4 py-2.5 text-xs font-bold transition-all cursor-pointer shadow-md shadow-emerald-500/10"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl gradient-accent hover:opacity-95 text-white px-4 py-2.5 text-xs font-bold transition-all cursor-pointer shadow-md shadow-emerald-500/10 hover:scale-[1.01]"
             >
-              <CheckCheck className="h-3 w-3" /> Got it
+              <CheckCheck className="h-3.5 w-3.5" /> Got it
             </button>
           )}
         </div>

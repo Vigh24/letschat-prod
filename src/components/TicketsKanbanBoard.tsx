@@ -42,7 +42,7 @@ function ColumnColorBar({ color }: { color: string }) {
     blue: 'bg-blue-500',
     slate: 'bg-slate-400 dark:bg-zinc-500',
   };
-  return <div className={`h-1 shrink-0 rounded-t-xl ${map[color] || map.slate}`} />;
+  return <div className={`h-1.5 shrink-0 rounded-t-2xl ${map[color] || map.slate}`} />;
 }
 
 interface TicketCardProps {
@@ -65,25 +65,27 @@ function TicketCard({ conv, onSelect }: TicketCardProps) {
       draggable
       onDragStart={handleDragStart}
       onClick={() => onSelect(conv.id)}
-      className="group cursor-pointer rounded-xl border border-slate-200/60 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-3.5 text-[11px] shadow-sm hover:shadow-md hover:border-slate-300/60 dark:hover:border-white/[0.1] transition-all duration-150 active:shadow-inner active:scale-[0.98]"
+      className="group cursor-pointer rounded-xl border border-slate-200/60 dark:border-white/[0.05] bg-white dark:bg-zinc-900/40 p-4 text-[11px] shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-white/[0.1] hover:scale-[1.01] transition-all duration-200 ease-out active:scale-[0.98] active:shadow-inner"
     >
       {/* Top row: ticket ID + update time */}
       <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 font-mono">
+        <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 font-mono">
           {conv.ticket_id || '—'}
         </span>
-        <span className="text-[9px] text-slate-400 dark:text-zinc-500">{formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}</span>
+        <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-mono">{formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}</span>
       </div>
 
       {/* Contact info */}
-      <div className="flex items-center gap-2.5 mb-2">
-        <Avatar size="sm">
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <Avatar size="sm" className="border border-white/20 dark:border-zinc-800">
           {contact?.avatar_url ? <AvatarImage src={contact.avatar_url} alt={contact.full_name || ''} /> : null}
-          <AvatarFallback>{(contact?.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="font-display font-semibold text-[10px] bg-emerald-500/5 text-emerald-600 dark:text-emerald-450">
+            {(contact?.full_name || '?').charAt(0).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-slate-800 dark:text-zinc-100 truncate text-xs">
+            <span className="font-semibold text-slate-800 dark:text-zinc-100 truncate text-xs font-sans">
               {contact?.full_name || 'Unknown'}
             </span>
             {tier !== 'standard' && tier !== 'free' && <TierLabel tier={tier} />}
@@ -98,15 +100,15 @@ function TicketCard({ conv, onSelect }: TicketCardProps) {
       <div className="flex items-center gap-1.5 flex-wrap">
         <PriorityDot priority={conv.priority} />
         {conv.channel && (
-          <span className="text-[8px] font-semibold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+          <span className="text-[8px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider font-mono">
             {conv.channel.channel_type}
           </span>
         )}
         {conv.assigned_agent && (
           <span className="text-[8px] text-slate-400 dark:text-zinc-500 flex items-center gap-0.5 ml-auto" title={conv.assigned_agent.full_name}>
-            <Avatar size="sm">
+            <Avatar size="sm" className="h-5 w-5 border border-white/10 dark:border-zinc-850">
               {conv.assigned_agent.avatar_url ? <AvatarImage src={conv.assigned_agent.avatar_url} alt={conv.assigned_agent.full_name} /> : null}
-              <AvatarFallback>{conv.assigned_agent.full_name.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="text-[8px] font-semibold">{conv.assigned_agent.full_name.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
           </span>
         )}
@@ -162,24 +164,24 @@ function Column({
   }, [status, onDrop]);
 
   return (
-    <div className="flex h-full min-w-[260px] max-w-[320px] flex-1 flex-col">
-      <div className={`rounded-t-xl ${dragOver ? 'ring-2 ring-emerald-400/40' : ''}`}>
-        <ColumnColorBar color={color} />
-      </div>
-      <div
-        ref={dropRef}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`flex flex-1 flex-col rounded-b-xl border border-t-0 border-slate-200/60 dark:border-white/[0.06] transition-colors duration-150 ${
-          dragOver ? 'bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-400/30' : 'bg-slate-50/30 dark:bg-white/[0.01]'
-        }`}
-      >
+    <div 
+      ref={dropRef}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`flex h-full min-w-[280px] max-w-[325px] flex-1 flex-col rounded-2xl border transition-all duration-200 ${
+        dragOver 
+          ? 'bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-400/30 shadow-[0_0_20px_rgba(16,185,129,0.06)]' 
+          : 'theme-border bg-slate-50/20 dark:bg-white/[0.015] shadow-sm hover:shadow-md'
+      }`}
+    >
+      <ColumnColorBar color={color} />
+      <div className="flex flex-1 flex-col">
         {/* Column header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200/60 dark:border-white/[0.06]">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-700 dark:text-zinc-200 uppercase tracking-wider">{label}</span>
-            <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-slate-200/60 dark:bg-white/[0.06] px-1 text-[9px] font-bold text-slate-500 dark:text-zinc-400">
+            <span className="text-[11px] font-bold text-slate-700 dark:text-zinc-200 uppercase tracking-wider font-display">{label}</span>
+            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-slate-200/65 dark:bg-white/[0.05] px-1.5 text-[9px] font-bold text-slate-500 dark:text-zinc-400 font-mono">
               {tickets.length}
             </span>
           </div>

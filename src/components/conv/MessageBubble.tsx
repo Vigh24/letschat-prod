@@ -122,20 +122,20 @@ export function MessageBubble({
           })()}
         </div>
       )}
-      <div className={`max-w-[72%] ${isOutgoing ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-        <div className={`rounded-2xl px-4 py-2.5 text-sm font-medium leading-relaxed shadow-sm overflow-hidden ${
+      <div className={`max-w-[72%] ${isOutgoing ? 'items-end' : 'items-start'} flex flex-col gap-1 transition-transform duration-200 hover:translate-y-[-1px]`}>
+        <div className={`rounded-2xl px-4 py-2.5 text-sm font-medium leading-relaxed shadow-sm overflow-hidden transition-all duration-200 ${
           msg.metadata?.is_internal
-            ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded-br-sm'
+            ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-900 dark:text-amber-200 border border-amber-500/25 rounded-br-sm shadow-[0_0_12px_rgba(245,158,11,0.03)] dark:shadow-[0_0_12px_rgba(245,158,11,0.06)]'
             : msg.sender_type === 'bot'
-              ? 'wa-bubble-ai rounded-br-sm'
+              ? 'wa-bubble-ai rounded-br-sm shadow-[0_0_15px_rgba(139,92,246,0.1)] hover:shadow-[0_0_20px_rgba(139,92,246,0.18)]'
               : isOutgoing
-                ? 'wa-bubble-out rounded-br-sm'
-                : 'wa-bubble-in rounded-bl-sm'
+                ? 'wa-bubble-out rounded-br-sm hover:shadow-md'
+                : 'wa-bubble-in rounded-bl-sm hover:shadow-md'
         }`}>
           {msg.sender_type === 'bot' && (
-            <div className="flex items-center gap-1.5 mb-1.5 pb-1.5 border-b border-violet-500/10">
-              <Sparkles className="h-3 w-3 text-violet-500 animate-pulse" />
-              <span className="text-[9px] font-bold uppercase tracking-wider text-violet-650 dark:text-violet-400">AI Assistant</span>
+            <div className="flex items-center gap-1.5 mb-1.5 pb-1.5 border-b border-violet-500/10 select-none">
+              <Sparkles className="h-3.5 w-3.5 text-violet-500 animate-pulse" />
+              <span className="text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 font-display">AI Assistant</span>
             </div>
           )}
           {msg.metadata?.reply_to_message && (

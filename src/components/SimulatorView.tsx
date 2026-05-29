@@ -103,44 +103,48 @@ function ScenarioCard({ scenario, onSelect }: { scenario: SimulatorScenario; onS
   };
 
   return (
-    <div className="group glass-card p-5 hover:scale-[1.005] transition-all duration-200 cursor-pointer" onClick={onSelect}>
-      <div className="flex items-start justify-between mb-3.5">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{moodEmoji[scenario.persona.mood]}</span>
-          <div>
-            <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold tracking-wider ${difficultyColors[scenario.difficulty]}`}>
-              {scenario.difficulty.toUpperCase()}
-            </span>
+    <div className="group rounded-2xl border border-slate-200/60 dark:border-white/[0.05] bg-white dark:bg-zinc-900/40 p-5 hover:shadow-lg hover:border-slate-300 dark:hover:border-white/[0.1] hover:scale-[1.01] transition-all duration-200 cursor-pointer flex flex-col justify-between" onClick={onSelect}>
+      <div>
+        <div className="flex items-start justify-between mb-3.5">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{moodEmoji[scenario.persona.mood]}</span>
+            <div>
+              <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold tracking-wider font-mono ${difficultyColors[scenario.difficulty]}`}>
+                {scenario.difficulty.toUpperCase()}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/15 px-2.5 py-1 text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-all duration-200">
+            <Play className="h-3 w-3 fill-current" />
+            <span className="text-xs font-bold uppercase tracking-wider font-display">Start</span>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/15 px-2.5 py-1 text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-all duration-200">
-          <Play className="h-3 w-3 fill-current" />
-          <span className="text-xs font-bold uppercase tracking-wider">Start</span>
+
+        <h3 className="text-sm font-bold theme-text-main mb-1.5 leading-tight font-sans group-hover:text-emerald-500 transition-colors">{scenario.title}</h3>
+        <p className="text-xs theme-text-secondary leading-relaxed mb-4">{scenario.description}</p>
+      </div>
+
+      <div>
+        <div className="border-t theme-border pt-3.5">
+          <p className="text-[9px] font-bold uppercase tracking-wider theme-text-muted mb-2 font-display">Learning Objectives</p>
+          <ul className="space-y-1.5">
+            {scenario.learning_objectives.slice(0, 2).map((obj, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-[10px] theme-text-secondary leading-normal font-medium">
+                <Target className="h-3.5 w-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                {obj}
+              </li>
+            ))}
+            {scenario.learning_objectives.length > 2 && (
+              <li className="text-[10px] theme-text-muted font-medium pl-5">+{scenario.learning_objectives.length - 2} more...</li>
+            )}
+          </ul>
         </div>
-      </div>
 
-      <h3 className="text-sm font-bold theme-text-main mb-1 leading-tight">{scenario.title}</h3>
-      <p className="text-xs theme-text-secondary leading-relaxed mb-3.5">{scenario.description}</p>
-
-      <div className="border-t theme-border pt-3.5">
-        <p className="text-[9px] font-bold uppercase tracking-wider theme-text-muted mb-2">Learning Objectives</p>
-        <ul className="space-y-1.5">
-          {scenario.learning_objectives.slice(0, 2).map((obj, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-[10px] theme-text-secondary leading-normal font-medium">
-              <Target className="h-3.5 w-3.5 text-emerald-500 mt-0.5 shrink-0" />
-              {obj}
-            </li>
+        <div className="mt-3.5 flex gap-1.5 flex-wrap">
+          {scenario.tags.map(tag => (
+            <span key={tag} className="rounded-full bg-zinc-50 dark:bg-white/[0.02] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider theme-text-secondary border theme-border font-mono">#{tag}</span>
           ))}
-          {scenario.learning_objectives.length > 2 && (
-            <li className="text-[10px] theme-text-muted font-medium pl-5">+{scenario.learning_objectives.length - 2} more...</li>
-          )}
-        </ul>
-      </div>
-
-      <div className="mt-3.5 flex gap-1.5 flex-wrap">
-        {scenario.tags.map(tag => (
-          <span key={tag} className="rounded-full bg-zinc-50 dark:bg-white/[0.02] px-2.5 py-0.5 text-[9px] font-semibold theme-text-secondary border theme-border">#{tag}</span>
-        ))}
+        </div>
       </div>
     </div>
   );
@@ -154,7 +158,7 @@ function ScoreRing({ score, label, color }: { score: number; label: string; colo
   const dash = (score / 100) * circ;
 
   return (
-    <div className="flex flex-col items-center gap-1 shrink-0">
+    <div className="flex flex-col items-center gap-1.5 shrink-0 select-none">
       <svg className="-rotate-90" width="52" height="52">
         <circle cx="26" cy="26" r={radius} fill="none" className="stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="4" />
         <circle
@@ -163,6 +167,7 @@ function ScoreRing({ score, label, color }: { score: number; label: string; colo
           strokeDasharray={`${dash} ${circ}`}
           strokeLinecap="round"
           className="transition-all duration-700"
+          style={{ filter: `drop-shadow(0 0 2px ${color}80)` }}
         />
       </svg>
       <span className="text-xs font-bold theme-text-main font-mono">{score}</span>
@@ -361,12 +366,18 @@ function SimulatorChat({
                   </div>
                   {/* Feedback for agent messages */}
                   {isAgent && msg.feedback && (
-                    <div className="w-full rounded-xl border theme-border theme-bg-secondary p-4 shadow-sm space-y-3">
-                      <div className="flex items-center gap-4">
-                        <div className={`text-xl font-extrabold font-mono ${
-                          msg.feedback.score >= 70 ? 'text-emerald-500' : msg.feedback.score >= 50 ? 'text-amber-600' : 'text-red-500'
+                    <div className={`w-full rounded-2xl border theme-border theme-bg-secondary p-4.5 shadow-md space-y-3.5 border-l-4 ${
+                      msg.feedback.score >= 70 
+                        ? 'border-l-emerald-500 shadow-emerald-500/[0.02]' 
+                        : msg.feedback.score >= 50 
+                          ? 'border-l-amber-500 shadow-amber-500/[0.02]' 
+                          : 'border-l-red-500 shadow-red-500/[0.02]'
+                    }`}>
+                      <div className="flex items-center gap-4 justify-between">
+                        <div className={`text-2xl font-extrabold font-mono font-display ${
+                          msg.feedback.score >= 70 ? 'text-emerald-505 dark:text-emerald-400' : msg.feedback.score >= 50 ? 'text-amber-550 dark:text-amber-400' : 'text-red-550 dark:text-red-400'
                         }`}>
-                          {msg.feedback.score}/100
+                          {msg.feedback.score}<span className="text-xs font-semibold text-slate-500 dark:text-zinc-500">/100</span>
                         </div>
                         <div className="flex gap-4">
                           <ScoreRing score={msg.feedback.empathy_score}          label="Empathy"    color="#8b5cf6" />
@@ -374,24 +385,26 @@ function SimulatorChat({
                           <ScoreRing score={msg.feedback.resolution_effectiveness} label="Resolution" color="#10b981" />
                         </div>
                       </div>
-                      {msg.feedback.strengths.length > 0 && (
-                        <div className="space-y-1">
-                          {msg.feedback.strengths.map((s, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                              <ThumbsUp className="h-3.5 w-3.5 shrink-0" />{s}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {msg.feedback.improvements.length > 0 && (
-                        <div className="space-y-1 pt-0.5">
-                          {msg.feedback.improvements.map((imp, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-[10px] font-bold text-amber-705 dark:text-amber-450">
-                              <ThumbsDown className="h-3.5 w-3.5 shrink-0" />{imp}
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      <div className="space-y-1.5 border-t theme-border pt-3">
+                        {msg.feedback.strengths.length > 0 && (
+                          <div className="space-y-1.5">
+                            {msg.feedback.strengths.map((s, i) => (
+                              <div key={i} className="flex items-start gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 font-sans">
+                                <ThumbsUp className="h-3.5 w-3.5 shrink-0 text-emerald-500" />{s}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {msg.feedback.improvements.length > 0 && (
+                          <div className="space-y-1.5 pt-1">
+                            {msg.feedback.improvements.map((imp, i) => (
+                              <div key={i} className="flex items-start gap-1.5 text-[10px] font-bold text-amber-700 dark:text-amber-450 font-sans">
+                                <ThumbsDown className="h-3.5 w-3.5 shrink-0 text-amber-500" />{imp}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -558,17 +571,19 @@ export function SimulatorView() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { icon: Target,       label: 'Scenarios Available', value: `${simulatorScenarios.length}`, color: 'text-emerald-600 dark:text-emerald-400 border-emerald-500/15', bg: 'bg-emerald-500/10' },
-              { icon: BarChart2,    label: 'Avg Agent Score',     value: '76/100',                       color: 'text-emerald-600 dark:text-emerald-400 border-emerald-500/15', bg: 'bg-emerald-500/10' },
-              { icon: GraduationCap,label: 'Skills Covered',      value: '12',                           color: 'text-blue-650 dark:text-blue-400 border-blue-500/15',    bg: 'bg-blue-500/10' },
+              { icon: Target,       label: 'Scenarios Available', value: `${simulatorScenarios.length}`, color: 'text-emerald-600 dark:text-emerald-400 border-emerald-500/15', bg: 'bg-emerald-500/5' },
+              { icon: BarChart2,    label: 'Avg Agent Score',     value: '76/100',                       color: 'text-emerald-600 dark:text-emerald-400 border-emerald-500/15', bg: 'bg-emerald-500/5' },
+              { icon: GraduationCap,label: 'Skills Covered',      value: '12',                           color: 'text-blue-600 dark:text-blue-400 border-blue-500/15',    bg: 'bg-blue-500/5' },
             ].map(({ icon: Icon, label, value, color, bg }) => (
-              <div key={label} className={`rounded-xl ${bg} p-4 flex items-center gap-3 border ${color.split(' ')[2]}`}>
-                <Icon className={`h-6 w-6 ${color.split(' ')[0]}`} />
+              <div key={label} className="rounded-2xl p-4.5 flex items-center gap-4 border theme-border bg-white dark:bg-white/[0.015] shadow-sm hover:shadow-md transition-all duration-150">
+                <div className={`h-11 w-11 rounded-xl ${bg} flex items-center justify-center shrink-0 border border-white/10`}>
+                  <Icon className={`h-5 w-5 ${color.split(' ')[0]}`} />
+                </div>
                 <div>
-                  <p className={`text-xl font-bold tracking-tight leading-tight ${color.split(' ')[0]}`}>{value}</p>
-                  <p className="text-[10px] theme-text-muted mt-0.5 uppercase tracking-wider font-semibold">{label}</p>
+                  <p className="text-xl font-bold tracking-tight leading-tight theme-text-main font-display">{value}</p>
+                  <p className="text-[10px] theme-text-muted mt-0.5 uppercase tracking-wider font-bold">{label}</p>
                 </div>
               </div>
             ))}
@@ -576,13 +591,13 @@ export function SimulatorView() {
         </div>
 
         {/* LLM Notice */}
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.05] p-4">
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center shrink-0 shadow-sm">
-            <Zap className="h-4 w-4 text-emerald-500" />
+        <div className="flex items-start gap-4.5 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-5 shadow-[0_0_15px_rgba(16,185,129,0.02)]">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center shrink-0 shadow-sm">
+            <Zap className="h-4.5 w-4.5 text-emerald-555 dark:text-emerald-400" />
           </div>
           <div>
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-300 uppercase tracking-wider">Powered by Gemma 3 · Local LLM</p>
-            <p className="text-xs theme-text-secondary mt-1 leading-relaxed font-medium">
+            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-450 uppercase tracking-wider font-display">Powered by Gemma 3 · Local LLM</p>
+            <p className="text-xs theme-text-secondary mt-1.5 leading-relaxed font-medium">
               Each customer turn is generated in real-time by the local LLM. Customer responses dynamically adapt to your message quality —
               empathetic, actionable responses de-escalate the situation; poor responses escalate it further.
             </p>
