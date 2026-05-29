@@ -148,6 +148,8 @@ export function RootLayout() {
 
   const activeView = getActiveViewFromPath(window.location.pathname)
 
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
     <TwilioVoiceProvider>
       <div className="flex h-screen overflow-hidden theme-bg-primary theme-text-main font-sans antialiased transition-all duration-200">
@@ -156,9 +158,11 @@ export function RootLayout() {
           onViewChange={handleViewChange}
           badgeCounts={useAppStore.getState().badgeCounts}
           onLogOut={handleLogOut}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
         />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <TopBar />
+        <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+          <TopBar onMenuClick={() => setSidebarOpen(true)} />
           <main className="flex-1 overflow-hidden">
             <Outlet />
           </main>

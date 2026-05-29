@@ -126,7 +126,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
 
   return (
     <div className="h-full overflow-y-auto theme-bg-primary">
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Greeting */}
         <div className="mb-8">
           <h1 className="text-xl font-bold theme-text-main tracking-tight">
@@ -136,7 +136,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
         </div>
 
         {/* KPI Metric Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="rounded-xl border theme-border p-4 theme-bg-secondary border-l-[3px] border-l-blue-500 transition-shadow hover:shadow-md">
             <div className="flex items-center justify-between mb-2"><Inbox className="h-4 w-4 text-blue-500" /></div>
             <p className="text-2xl font-bold theme-text-main tracking-tight">{openCount}</p>
@@ -174,7 +174,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
         )}
 
         {/* Distribution Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 mb-8">
           {/* Channel Distribution */}
           <div className="rounded-xl border theme-border theme-bg-secondary p-5">
             <h3 className="text-xs font-bold theme-text-main mb-4 tracking-wide">Channel Distribution</h3>
@@ -250,15 +250,15 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-8 flex-wrap">
           <button onClick={() => onNavigate('inbox')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
+            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
           ><Plus className="h-3.5 w-3.5" />New Chat</button>
           <button onClick={() => onNavigate('inbox')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
+            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
           ><Inbox className="h-3.5 w-3.5" />View Inbox</button>
           <button onClick={() => onNavigate('analytics')}
-            className="flex items-center gap-2 rounded-lg border theme-border px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
+            className="flex items-center gap-2 rounded-lg border theme-border px-3 sm:px-4 py-2 text-xs font-semibold theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
           ><BarChart3 className="h-3.5 w-3.5" />Analytics</button>
         </div>
 
@@ -277,8 +277,8 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
               <p className="text-xs theme-text-muted mt-1">Conversations will appear when customers message via WhatsApp</p>
             </div>
           ) : (
-            <div className="rounded-xl border theme-border theme-bg-secondary overflow-hidden">
-              <div className="grid grid-cols-12 gap-4 border-b theme-border px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider theme-text-muted">
+            <div className="rounded-xl border theme-border theme-bg-secondary overflow-x-auto">
+              <div className="grid grid-cols-12 gap-2 sm:gap-4 border-b theme-border px-3 sm:px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider theme-text-muted min-w-[600px]">
                 <div className="col-span-1">Ticket</div>
                 <div className="col-span-4">Contact</div>
                 <div className="col-span-2">Status</div>
@@ -289,7 +289,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
                 const tier = (conv.contact?.metadata?.account_tier as CustomerTier) ?? 'standard';
                 return (
                   <div key={conv.id} onClick={() => { onSelectConversation(conv.id); onNavigate('inbox'); }}
-                    className="grid grid-cols-12 gap-4 border-b last:border-b-0 theme-border px-5 py-3.5 text-xs items-center cursor-pointer hover:theme-bg-hover transition-colors"
+                    className="grid grid-cols-12 gap-2 sm:gap-4 border-b last:border-b-0 theme-border px-3 sm:px-5 py-3 text-xs items-center cursor-pointer hover:theme-bg-hover transition-colors"
                   >
                     <div className="col-span-1"><TicketBadge ticketId={conv.ticket_id} /></div>
                     <div className="col-span-4 flex items-center gap-2.5 min-w-0">

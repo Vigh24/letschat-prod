@@ -1,7 +1,7 @@
 import {
   Inbox, Ticket, Cpu, GraduationCap, Radio,
   Brain, Settings, BarChart3, Bell, LogOut,
-  Users, LayoutDashboard
+  Users, LayoutDashboard, X
 } from 'lucide-react';
 import type { ActiveView } from '../types';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
@@ -15,6 +15,8 @@ interface SidebarProps {
     channels?: number;
   };
   onLogOut?: () => void;
+  open: boolean;
+  onClose: () => void;
 }
 
 interface NavItem {
@@ -45,22 +47,25 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut }: SidebarProps) {
+export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut, open, onClose }: SidebarProps) {
   const sections = currentAgent.role === 'admin' ? ['Support', 'Manage'] : ['Support'];
 
-  return (
-    <aside className="flex h-screen w-52 flex-col border-r theme-border theme-bg-secondary transition-colors duration-200">
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="flex h-14 shrink-0 items-center gap-2.5 border-b theme-border px-5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 dark:bg-emerald-500 text-white shadow-sm">
-          <WhatsAppIcon className="h-3.5 w-3.5" />
+      <div className="flex h-14 shrink-0 items-center justify-between border-b theme-border px-5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 dark:bg-emerald-500 text-white shadow-sm">
+            <WhatsAppIcon className="h-3.5 w-3.5" />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[13px] font-bold theme-text-main tracking-tight">Lets Chat</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[13px] font-bold theme-text-main tracking-tight">Lets Chat</span>
-        </div>
+        <button onClick={onClose} className="lg:hidden rounded-lg p-1 theme-text-muted hover:theme-text-main transition-colors cursor-pointer">
+          <X className="h-4 w-4" />
+        </button>
       </div>
-
-
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
@@ -78,8 +83,8 @@ export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut }: Sid
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onViewChange(item.id)}
-                    className={`group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-left transition-all duration-150 ${
+                    onClick={() => { onViewChange(item.id); onClose(); }}
+                    className={`group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-left transition-all duration-150 cursor-pointer ${
                       isActive
                         ? 'bg-emerald-500/8 text-emerald-600 dark:text-emerald-400 font-semibold border-l-2 border-emerald-500 -ml-px'
                         : 'theme-text-muted hover:theme-text-main hover:bg-black/[0.02] dark:hover:bg-white/[0.03]'
@@ -123,20 +128,34 @@ export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut }: Sid
             </p>
           </div>
           {onLogOut ? (
-            <button 
-              onClick={onLogOut}
-              className="rounded-lg p-1.5 text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-colors shrink-0"
+            <button onClick={onLogOut}
+              className="rounded-lg p-1.5 text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-colors shrink-0 cursor-pointer"
               title="Log Out"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
+            ><LogOut className="h-3.5 w-3.5" /></button>
           ) : (
-            <button className="rounded-lg p-1.5 theme-text-muted hover:theme-text-main transition-colors shrink-0" style={{ background: 'transparent' }}>
+            <button className="rounded-lg p-1.5 theme-text-muted hover:theme-text-main transition-colors shrink-0 cursor-pointer" style={{ background: 'transparent' }}>
               <Bell className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {open && (
+        <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden animate-fade-in" onClick={onClose} />
+      )}
+      {/* Mobile sidebar (overlay) */}
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col theme-bg-secondary border-r theme-border transition-transform duration-300 lg:hidden ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        {sidebarContent}
+      </aside>
+      {/* Desktop sidebar (always visible) */}
+      <aside className="hidden lg:flex h-screen w-52 flex-col border-r theme-border theme-bg-secondary shrink-0">
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

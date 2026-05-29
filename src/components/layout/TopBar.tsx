@@ -1,4 +1,4 @@
-import { Sun, Moon, LayoutDashboard, Inbox, Ticket, Cpu, GraduationCap, Radio, Brain, BarChart3, Settings, Users, type LucideIcon } from 'lucide-react'
+import { Sun, Moon, Menu, LayoutDashboard, Inbox, Ticket, Cpu, GraduationCap, Radio, Brain, BarChart3, Settings, Users, type LucideIcon } from 'lucide-react'
 import type { ActiveView } from '@/types'
 import { useAppStore } from '@/store/appStore'
 import { useRouterState } from '@tanstack/react-router'
@@ -16,7 +16,7 @@ const viewMeta: Record<ActiveView, { title: string; subtitle: string; icon: Luci
   team:         { title: 'Team Management',    subtitle: 'Workspace member access control & roles', icon: Users },
 }
 
-export function TopBar() {
+export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const theme = useAppStore(s => s.theme)
   const toggleTheme = useAppStore(s => s.toggleTheme)
   const pathname = useRouterState({ select: s => s.location.pathname })
@@ -30,21 +30,21 @@ export function TopBar() {
   const { title, icon: ViewIcon } = viewMeta[activeView] ?? viewMeta.dashboard
 
   return (
-    <div className="flex h-11 shrink-0 items-center justify-between border-b theme-border theme-bg-secondary px-6">
+    <div className="flex h-11 shrink-0 items-center justify-between border-b theme-border theme-bg-secondary px-3 sm:px-6">
       <div className="min-w-0 flex items-center gap-2.5">
-        <ViewIcon className="h-4 w-4 theme-text-muted" />
+        <button onClick={onMenuClick} className="lg:hidden rounded-lg p-1.5 theme-text-muted hover:theme-text-main hover:bg-white/[0.04] transition-colors -ml-1 cursor-pointer" title="Toggle sidebar">
+          <Menu className="h-4 w-4" />
+        </button>
+        <ViewIcon className="h-4 w-4 theme-text-muted hidden sm:block" />
         <div>
           <h1 className="font-semibold theme-text-main text-[13px] leading-tight">{title}</h1>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0 ml-4">
-        <button
-          onClick={toggleTheme}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border theme-border theme-text-muted hover:theme-text-main hover:theme-bg-hover transition-colors"
+        <button onClick={toggleTheme}
+          className="flex h-7 w-7 items-center justify-center rounded-lg border theme-border theme-text-muted hover:theme-text-main hover:theme-bg-hover transition-colors cursor-pointer"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-        >
-          {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-        </button>
+        >{theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}</button>
       </div>
     </div>
   )

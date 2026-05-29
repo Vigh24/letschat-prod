@@ -491,7 +491,7 @@ function ChatPanel({
     <div className="flex h-full w-full overflow-hidden theme-bg-panel relative">
       <div className="flex flex-col flex-1 h-full min-w-0 theme-bg-primary">
         {/* Chat header */}
-        <div className="flex h-14 shrink-0 items-center gap-3 theme-bg-secondary px-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <div className="flex h-14 shrink-0 items-center gap-1 sm:gap-3 theme-bg-secondary px-2 sm:px-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
           <button onClick={onBack} className="rounded-lg p-1.5 theme-text-muted hover:bg-white/[0.03] hover:theme-text-main transition-colors lg:hidden">
             <ArrowLeft className="h-4 w-4" />
           </button>
@@ -527,9 +527,9 @@ function ChatPanel({
               {typingAgents[0].name} is typing...
             </div>
           )}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {agent ? (
-              <div className="flex items-center gap-1.5 border theme-border bg-white/[0.01] px-2.5 py-1 rounded-lg">
+              <div className="flex items-center gap-1.5 border theme-border bg-white/[0.01] px-2 py-1 rounded-lg">
                 <Avatar size="sm"><AvatarFallback>{agent.full_name.charAt(0).toUpperCase()}</AvatarFallback></Avatar>
                 <span className="text-[11px] theme-text-secondary hidden sm:block truncate max-w-[80px]">{agent.full_name}</span>
                 <button 
@@ -543,27 +543,19 @@ function ChatPanel({
             ) : (
               <AgentAssignDropdown agents={agents} currentAssignedId={conv.assigned_agent_id} onAssign={handleAssignAgent} />
             )}
-            <PriorityBadge priority={conv.priority} />
-            {tags.length > 0 && (
-              <TagPicker
-                tags={tags}
-                selectedTagIds={conv.tags || []}
-                onToggle={handleTagToggle}
-                onCreate={handleCreateTag}
-              />
-            )}
-            {tags.length === 0 && (
-              <TagPicker
-                tags={tags}
-                selectedTagIds={conv.tags || []}
-                onToggle={handleTagToggle}
-                onCreate={handleCreateTag}
-              />
-            )}
+            <div className="hidden sm:flex items-center gap-1.5">
+              <PriorityBadge priority={conv.priority} />
+              {tags.length > 0 && (
+                <TagPicker tags={tags} selectedTagIds={conv.tags || []} onToggle={handleTagToggle} onCreate={handleCreateTag} />
+              )}
+              {tags.length === 0 && (
+                <TagPicker tags={tags} selectedTagIds={conv.tags || []} onToggle={handleTagToggle} onCreate={handleCreateTag} />
+              )}
+            </div>
             {contact?.whatsapp_number && twilioConfig.isEnabled && (
               <button
                 onClick={() => makeCall(contact.whatsapp_number!)}
-                className="flex items-center justify-center rounded-lg border border-zinc-200 dark:border-white/[0.08] p-1.5 text-zinc-700 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors duration-150 cursor-pointer"
+                className="hidden sm:flex items-center justify-center rounded-lg border border-zinc-200 dark:border-white/[0.08] p-1.5 text-zinc-700 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors duration-150 cursor-pointer"
                 title={`Call ${contact.full_name} via Twilio`}
               >
                 <Phone className="h-3.5 w-3.5" />
@@ -571,45 +563,45 @@ function ChatPanel({
             )}
             {conv.status === 'resolved' || conv.status === 'awaiting_response' ? (
               <button 
-                onClick={() => handleUpdateStatus('open')}
-                className="flex items-center gap-1 rounded-lg border border-blue-500/10 bg-blue-500/5 px-3 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors duration-150 cursor-pointer"
+                  onClick={() => handleUpdateStatus('open')}
+                  className="flex items-center gap-1 rounded-lg border border-blue-500/10 bg-blue-500/5 px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors duration-150 cursor-pointer"
+                >
+                  Reopen
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setShowResolveModal(true)}
+                    className="flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer"
+                  >
+                    Resolve
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus('awaiting_response')}
+                    disabled={!lastMsgFromAgent}
+                    className={`flex items-center gap-1 rounded-lg border px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-semibold transition-all duration-150 ${
+                      lastMsgFromAgent
+                        ? 'border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/[0.02] cursor-pointer'
+                        : 'border-white/[0.04] bg-white/[0.01] text-zinc-500 dark:text-zinc-650 cursor-not-allowed'
+                    }`}
+                    title={lastMsgFromAgent ? 'Mark as awaiting customer reply' : 'Only available after you send a message'}
+                  >
+                    Awaiting
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setRightCollapsed(!rightCollapsed)}
+                className="hidden lg:flex items-center justify-center rounded-lg border border-zinc-200 dark:border-white/[0.08] p-1.5 text-zinc-700 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors duration-150 cursor-pointer"
+                title={rightCollapsed ? "Expand Details Sidebar" : "Collapse Details Sidebar"}
               >
-                Reopen
+                <PanelRightClose className="h-3.5 w-3.5" style={{ transform: rightCollapsed ? 'rotate(180deg)' : 'none' }} />
               </button>
-            ) : (
-              <>
-                <button 
-                  onClick={() => setShowResolveModal(true)}
-                  className="flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer"
-                >
-                  Resolve
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus('awaiting_response')}
-                  disabled={!lastMsgFromAgent}
-                  className={`flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all duration-150 ${
-                    lastMsgFromAgent
-                      ? 'border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/[0.02] cursor-pointer'
-                      : 'border-white/[0.04] bg-white/[0.01] text-zinc-500 dark:text-zinc-650 cursor-not-allowed'
-                  }`}
-                  title={lastMsgFromAgent ? 'Mark as awaiting customer reply' : 'Only available after you send a message'}
-                >
-                  Awaiting Reply
-                </button>
-              </>
-            )}
-            <button
-              onClick={() => setRightCollapsed(!rightCollapsed)}
-              className="flex items-center justify-center rounded-lg border border-zinc-200 dark:border-white/[0.08] p-1.5 text-zinc-700 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors duration-150 cursor-pointer"
-              title={rightCollapsed ? "Expand Details Sidebar" : "Collapse Details Sidebar"}
-            >
-              <PanelRightClose className="h-3.5 w-3.5" style={{ transform: rightCollapsed ? 'rotate(180deg)' : 'none' }} />
-            </button>
           </div>
         </div>
 
         {/* Message history */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 relative theme-bg-chat">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 space-y-4 relative theme-bg-chat">
           {loadingMsgs ? (
             <div className="flex h-full items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
@@ -664,7 +656,7 @@ function ChatPanel({
                 </div>
               </div>
             )}
-            <div className="border-t theme-border theme-bg-secondary p-4 relative">
+            <div className="border-t theme-border theme-bg-secondary p-2 sm:p-4 relative">
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -675,12 +667,12 @@ function ChatPanel({
 
               {/* Quoted Reply context */}
               {replyToMessage && (
-                <div className="mb-2.5 flex items-center justify-between rounded-xl bg-black/20 border-l-4 border-emerald-500/50 p-2.5 text-xs animate-slide-up">
+                <div className="mb-2 flex items-center justify-between rounded-xl bg-black/20 border-l-4 border-emerald-500/50 p-2 text-xs animate-slide-up">
                   <div className="min-w-0">
                     <span className="block text-[9px] font-bold theme-text-muted uppercase tracking-wider">
                       Replying to {replyToMessage.sender_type === 'agent' ? 'Agent' : 'Customer'}
                     </span>
-                    <p className="truncate theme-text-secondary mt-0.5">{replyToMessage.content}</p>
+                    <p className="truncate theme-text-secondary mt-0.5 max-w-[200px] sm:max-w-none">{replyToMessage.content}</p>
                   </div>
                   <button 
                     onClick={() => setReplyToMessage(null)} 
@@ -772,7 +764,7 @@ function ChatPanel({
                 </button>
               </div>
 
-              <div className="flex items-start gap-3 rounded-xl border theme-border bg-white/[0.01] p-3 focus-within:border-emerald-500/30 transition-all duration-200">
+              <div className="flex items-start gap-2 sm:gap-3 rounded-xl border theme-border bg-white/[0.01] p-2 sm:p-3 focus-within:border-emerald-500/30 transition-all duration-200">
                 <textarea
                   value={draft}
                   onChange={e => handleDraftChange(e.target.value)}
@@ -1457,7 +1449,7 @@ export function InboxView({ selectedConvId: propSelectedConvId, setSelectedConvI
         className={`flex h-full flex-col theme-bg-secondary relative ${selectedConvId ? 'hidden lg:flex' : 'flex w-full'} shrink-0 ${isResizing === 'left' ? '' : 'sidebar-transition'} ${leftCollapsed ? 'sidebar-collapsed' : ''}`}
         style={selectedConvId ? { width: leftCollapsed ? 0 : leftWidth, minWidth: leftCollapsed ? 0 : 240 } : undefined}
       >
-        <div className="px-5 py-4" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+        <div className="px-3 sm:px-5 py-4" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <h1 className="text-xs font-bold theme-text-main uppercase tracking-wider">Conversations</h1>
@@ -1466,7 +1458,7 @@ export function InboxView({ selectedConvId: propSelectedConvId, setSelectedConvI
               <button 
                 onClick={() => setOpenTemplateModal(true)}
                 title="Initiate WhatsApp Chat"
-                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow-sm rounded-full px-3.5 py-1.5 transition-all duration-150 cursor-pointer"
+                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 shadow-sm rounded-full px-3 py-1.5 transition-all duration-150 cursor-pointer"
               >
                 <Plus className="h-3 w-3" />New Chat
               </button>
@@ -1479,7 +1471,7 @@ export function InboxView({ selectedConvId: propSelectedConvId, setSelectedConvI
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-[10px] font-medium theme-text-muted mb-4">
+          <div className="flex items-center gap-2 text-[10px] font-medium theme-text-muted mb-4 flex-wrap">
             <span>{openCount} open</span>
             <span className="text-zinc-600 dark:text-zinc-500">·</span>
             <span>{pendingCount} pending</span>

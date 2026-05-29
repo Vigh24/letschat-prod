@@ -26,7 +26,7 @@ export function FilterBar(props: FilterBarProps) {
   const priorities = ['all', 'urgent', 'high', 'medium', 'low'];
 
   return (
-    <div className="filter-bar px-4 pb-3 space-y-2">
+    <div className="filter-bar px-3 sm:px-4 pb-3 space-y-2">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500 dark:text-zinc-500 pointer-events-none" />
         <input
@@ -44,11 +44,11 @@ export function FilterBar(props: FilterBarProps) {
           </button>
         )}
       </div>
-      <div className="flex gap-1.5 flex-wrap">
-        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04]">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04] shrink-0">
           {statuses.map(s => (
             <button key={s} onClick={() => props.onStatusFilterChange(s)}
-              className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+              className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                 props.statusFilter === s
                   ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
                   : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/[0.04]'
@@ -56,10 +56,10 @@ export function FilterBar(props: FilterBarProps) {
             >{s === 'all' ? 'All' : s.replace('_', ' ')}</button>
           ))}
         </div>
-        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04]">
+        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04] shrink-0">
           {channels.map(c => (
             <button key={c} onClick={() => props.onChannelFilterChange(c)}
-              className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+              className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                 props.channelFilter === c
                   ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
                   : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/[0.04]'
@@ -67,10 +67,10 @@ export function FilterBar(props: FilterBarProps) {
             >{c === 'all' ? 'All' : c}</button>
           ))}
         </div>
-        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04]">
+        <div className="flex gap-1.5 bg-white/[0.02] p-1 rounded-xl border border-white/[0.04] shrink-0">
           {priorities.map(p => (
             <button key={p} onClick={() => props.onPriorityFilterChange(p)}
-              className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+              className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                 props.priorityFilter === p
                   ? 'bg-emerald-500/15 text-emerald-400 shadow-sm'
                   : 'text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/[0.04]'
@@ -79,7 +79,7 @@ export function FilterBar(props: FilterBarProps) {
           ))}
         </div>
         <button onClick={() => props.onUnreadOnlyChange(!props.unreadOnly)}
-          className={`px-2 py-1 text-[10px] font-bold rounded-xl transition-all cursor-pointer border ${
+          className={`whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-xl transition-all cursor-pointer border ${
             props.unreadOnly
               ? 'bg-amber-500/15 text-amber-400 border-amber-500/20 shadow-sm'
               : 'text-slate-500 dark:text-zinc-500 border-white/[0.04] hover:text-slate-700 dark:hover:text-zinc-300 hover:bg-white/[0.04]'
@@ -87,7 +87,7 @@ export function FilterBar(props: FilterBarProps) {
         >Unread</button>
         {hasAnyFilter && (
           <button onClick={() => { props.onSearchChange(''); props.onStatusFilterChange('all'); props.onChannelFilterChange('all'); props.onPriorityFilterChange('all'); props.onUnreadOnlyChange(false); props.setAgentFilter('all'); }}
-            className="px-2 py-1 text-[10px] font-bold rounded-xl transition-all text-slate-500 dark:text-zinc-500 hover:text-red-400 hover:bg-red-500/10 border border-white/[0.04] cursor-pointer"
+            className="whitespace-nowrap px-2 py-1 text-[10px] font-bold rounded-xl transition-all text-slate-500 dark:text-zinc-500 hover:text-red-400 hover:bg-red-500/10 border border-white/[0.04] cursor-pointer shrink-0"
           ><FilterX className="h-3 w-3 inline-block mr-0.5" />Clear</button>
         )}
       </div>
