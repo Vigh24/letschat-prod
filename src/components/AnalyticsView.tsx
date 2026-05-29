@@ -88,7 +88,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
           setViewYear(d.getFullYear());
           setOpen(!open);
         }}
-        className="rounded-lg border theme-border bg-white/[0.03] hover:bg-white/[0.06] px-2.5 py-1.5 text-[11px] theme-text-main font-mono focus:outline-none focus:border-emerald-500/40 transition-colors flex items-center gap-2 min-w-[130px]"
+        className="rounded-lg border theme-border theme-bg-active hover:theme-bg-hover px-2.5 py-1.5 text-[11px] theme-text-main font-mono focus:outline-none focus:border-emerald-500/40 transition-colors flex items-center gap-2 min-w-[130px]"
       >
         <span className="flex-1 text-left">
           {value ? parseLocalDate(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Select date'}
@@ -96,7 +96,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
         <svg className="h-3 w-3 theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
       </button>
       {open && (
-        <div className="absolute top-full mt-1 left-0 z-50 rounded-xl border theme-border bg-zinc-900/95 dark:bg-zinc-950/95 backdrop-blur-xl shadow-2xl p-3 w-[260px]">
+        <div className="absolute top-full mt-1 left-0 z-50 rounded-xl border theme-border theme-bg-secondary backdrop-blur-xl shadow-2xl p-3 w-[260px]">
           <div className="flex items-center justify-between mb-3">
             <button type="button" onClick={() => { if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); } else setViewMonth(m => m - 1); }} className="p-1 rounded-md hover:bg-white/[0.06] theme-text-muted hover:theme-text-main transition-colors">
               <ChevronLeft className="h-3.5 w-3.5" />
