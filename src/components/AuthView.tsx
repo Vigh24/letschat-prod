@@ -115,7 +115,7 @@ export function AuthView() {
               <p className="text-xl font-bold theme-text-main">99.9%</p>
               <p className="text-[9px] uppercase tracking-wider theme-text-muted font-bold mt-0.5">Uptime SLA</p>
             </div>
-            <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-8 w-px theme-border" />
             <div>
               <p className="text-xl font-bold theme-text-main">&lt; 1 min</p>
               <p className="text-[9px] uppercase tracking-wider theme-text-muted font-bold mt-0.5">AI Response Time</p>
@@ -155,18 +155,18 @@ export function AuthView() {
           </div>
 
           {/* Mode Tabs */}
-          <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 dark:bg-white/[0.03] p-1 border theme-border mb-6">
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 dark:bg-white/[0.08] p-1 border theme-border mb-6">
             <button 
               type="button"
               onClick={() => { setIsSignUp(false); setError(null); setMessage(null); }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${!isSignUp ? 'bg-white dark:bg-white/[0.06] theme-text-main shadow-sm border border-zinc-200/50 dark:border-none' : 'theme-text-muted hover:theme-text-secondary'}`}
+              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${!isSignUp ? 'bg-white dark:bg-zinc-700 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-600' : 'theme-text-muted hover:theme-text-secondary'}`}
             >
               Log In
             </button>
             <button 
               type="button"
               onClick={() => { setIsSignUp(true); setError(null); setMessage(null); }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${isSignUp ? 'bg-white dark:bg-white/[0.06] theme-text-main shadow-sm border border-zinc-200/50 dark:border-none' : 'theme-text-muted hover:theme-text-secondary'}`}
+              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${isSignUp ? 'bg-white dark:bg-zinc-700 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-600' : 'theme-text-muted hover:theme-text-secondary'}`}
             >
               Create Account
             </button>
@@ -263,7 +263,7 @@ export function AuthView() {
               <div className="w-full border-t theme-border"></div>
             </div>
             <div className="relative flex justify-center text-[9px] uppercase">
-              <span className="theme-bg-secondary px-3 theme-text-muted font-bold tracking-wider">Or continue with</span>
+              <span className="theme-bg-primary md:theme-bg-secondary px-3 theme-text-muted font-bold tracking-wider">Or continue with</span>
             </div>
           </div>
 
@@ -272,7 +272,7 @@ export function AuthView() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2.5 rounded-xl border theme-border bg-white/[0.01] hover:bg-zinc-50 dark:hover:bg-white/[0.03] px-4 py-2.5 text-xs font-semibold theme-text-secondary transition-all duration-150 disabled:opacity-50 select-none hover:border-zinc-300 dark:hover:border-zinc-800"
+            className="w-full flex items-center justify-center gap-2.5 rounded-xl border theme-border bg-white/[0.01] hover:bg-zinc-50 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] px-4 py-2.5 text-xs font-semibold theme-text-secondary transition-all duration-150 disabled:opacity-50 select-none hover:border-zinc-300 dark:hover:border-zinc-700"
           >
             <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
               <path
