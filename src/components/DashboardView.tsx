@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Inbox, Clock, MessageCircle, BarChart3, ArrowRight, Loader2, TrendingUp, AlertTriangle, Bot, Mail, Globe } from 'lucide-react';
+import { Inbox, Clock, MessageCircle, BarChart3, ArrowRight, Loader2, TrendingUp, AlertTriangle, Bot, Mail, Globe, Plus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
 import { StatusBadge, PriorityBadge, TierBadge, TicketBadge } from './ui/Badge';
