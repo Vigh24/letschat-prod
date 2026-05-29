@@ -92,8 +92,8 @@ export function RootLayout() {
   // Theme application
   useEffect(() => {
     const root = document.documentElement
-    if (theme === 'light') root.classList.add('light')
-    else root.classList.remove('light')
+    if (theme === 'light') { root.classList.add('light'); root.classList.remove('dark') }
+    else { root.classList.remove('light'); root.classList.add('dark') }
     root.classList.add('theme-changing')
     setTimeout(() => root.classList.remove('theme-changing'), 350)
   }, [theme])

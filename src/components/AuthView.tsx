@@ -159,14 +159,14 @@ export function AuthView() {
             <button 
               type="button"
               onClick={() => { setIsSignUp(false); setError(null); setMessage(null); }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${!isSignUp ? 'bg-white dark:bg-zinc-700 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-600' : 'theme-text-muted hover:theme-text-secondary'}`}
+              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${!isSignUp ? 'bg-white dark:bg-zinc-800 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-700' : 'theme-text-muted hover:theme-text-secondary'}`}
             >
               Log In
             </button>
             <button 
               type="button"
               onClick={() => { setIsSignUp(true); setError(null); setMessage(null); }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${isSignUp ? 'bg-white dark:bg-zinc-700 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-600' : 'theme-text-muted hover:theme-text-secondary'}`}
+              className={`rounded-lg py-2 text-xs font-bold transition-all duration-150 ${isSignUp ? 'bg-white dark:bg-zinc-800 theme-text-main shadow-sm border border-zinc-200/50 dark:border-zinc-700' : 'theme-text-muted hover:theme-text-secondary'}`}
             >
               Create Account
             </button>
