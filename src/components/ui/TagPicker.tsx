@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Tag, Plus, X, Loader2 } from 'lucide-react';
-import type { Tag as TagType } from '../types';
+import type { Tag as TagType } from '@/types';
 
 export function TagPicker({
   tags,

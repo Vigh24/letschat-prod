@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BarChart3, TrendingUp, Clock, Users, Star, Ticket, RefreshCw, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { currentAgent } from '../data/appConfig';
-import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
+import { Avatar, AvatarFallback } from './ui/Avatar';
 
 interface ChannelDistItem {
   channel: string;

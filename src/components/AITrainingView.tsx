@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Brain, Plus, Trash2, Zap, Shield, ArrowRight, Sparkles, Send, Target, AlertCircle } from 'lucide-react';
+import { Brain, Plus, Trash2, Zap, Shield, ArrowRight, Sparkles, Send, Target } from 'lucide-react';
 import type { IntentCategory, Priority } from '../types';
 
 interface TagRuleLocal {

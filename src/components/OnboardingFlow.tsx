@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, MessageCircle, Inbox, Send, Keyboard, Cpu, CheckCheck, ArrowRight } from 'lucide-react';
+import { MessageCircle, Inbox, Send, Keyboard, Cpu, CheckCheck, ArrowRight } from 'lucide-react';
 
 const steps = [
   {

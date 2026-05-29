@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import type { Tag } from '../types';
+import type { Tag } from '@/types';
 
 export function TagBadge({ tag, onRemove }: { tag: Tag; onRemove?: () => void }) {
   return (

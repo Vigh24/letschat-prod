@@ -495,7 +495,7 @@ function ChatPanel({
           <button onClick={onBack} className="rounded-lg p-1.5 theme-text-muted hover:bg-white/[0.03] hover:theme-text-main transition-colors lg:hidden">
             <ArrowLeft className="h-4 w-4" />
           </button>
-          {contact && <Avatar size="sm"><AvatarImage src={contact.avatar_url} alt={contact.full_name || ''} /><AvatarFallback>{(contact.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback></Avatar>}
+          {contact && <Avatar size="sm"><AvatarImage src={contact.avatar_url || undefined} alt={contact.full_name || ''} /><AvatarFallback>{(contact.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback></Avatar>}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold theme-text-main text-xs">{contact?.full_name ?? 'Unknown'}</span>
@@ -1602,7 +1602,7 @@ export function InboxView({ selectedConvId: propSelectedConvId, setSelectedConvI
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <Avatar size="xs"><AvatarImage src={currentAgent.avatar_url} alt={currentAgent.full_name} /><AvatarFallback>{currentAgent.full_name.charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+            <Avatar size="sm"><AvatarImage src={currentAgent.avatar_url || undefined} alt={currentAgent.full_name} /><AvatarFallback>{currentAgent.full_name.charAt(0).toUpperCase()}</AvatarFallback></Avatar>
             <span className="text-[10px] theme-text-muted ml-1 select-none">
               {currentAgent.full_name} ({role === 'admin' ? 'Admin' : 'Agent'})
             </span>

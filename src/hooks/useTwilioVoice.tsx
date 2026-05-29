@@ -3,8 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 // Web Audio API helper for synthesizer-based tones (avoiding CORS or missing file issues)
 class AudioSynth {
   private ctx: AudioContext | null = null;
-  private oscillators: OscillatorNode[] = [];
-  private gainNode: GainNode | null = null;
+
   private ringtoneInterval: any = null;
 
   init() {
@@ -314,7 +313,7 @@ export const TwilioVoiceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const device = new Device(token, {
           codecPreferences: ['opus', 'pcmu'],
           fakeLocalAudio: false,
-        });
+        } as any);
 
         deviceRef.current = device;
 

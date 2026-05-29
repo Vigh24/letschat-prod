@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/Avatar';
 
 export function AgentAssignDropdown({ agents, currentAssignedId, onAssign }: {
   agents: any[]; currentAssignedId: string | null | undefined; onAssign: (agentId: string | null) => void;

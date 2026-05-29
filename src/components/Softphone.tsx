@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, PhoneOff, PhoneCall, VolumeX, Volume2, Play, Pause, Delete, Grid, ChevronDown, ChevronUp, Wifi, X, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Phone, PhoneOff, PhoneCall, VolumeX, Play, Pause, Delete, Grid, ChevronDown, RefreshCw } from 'lucide-react';
 import { useTwilioVoice } from '../hooks/useTwilioVoice';
 
 export function Softphone({ activeView }: { activeView?: string }) {

@@ -4,30 +4,37 @@ import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
 import { StatusBadge, PriorityBadge, TierBadge, TicketBadge } from './ui/Badge';
 import { currentAgent } from '../data/appConfig';
-import type { Conversation, ChannelType, CustomerTier } from '../types';
+import type { Conversation, CustomerTier } from '../types';
 
 interface DashboardViewProps {
-  onNavigate: (view: 'inbox' | 'tickets' | 'analytics') => void;
+  onNavigate: (view: 'inbox' | 'tickets' | 'analytics' | 'settings') => void;
   onSelectConversation: (convId: string) => void;
 }
 
 export function DashboardView({ onNavigate, onSelectConversation }: DashboardViewProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     import('../lib/supabase').then(async ({ supabase, isSupabaseConfigured }) => {
       if (!isSupabaseConfigured) {
-        if (isMounted) { setConversations([]); setLoading(false); }
+        if (isMounted) {
+          setConversations([]);
+          setError('database_unconfigured');
+          setLoading(false);
+        }
         return;
       }
-      const { data, error } = await supabase
+      const { data, error: queryError } = await supabase
         .from('conversations')
         .select(`*, contact:contacts(*), channel:channels(*)`)
         .order('updated_at', { ascending: false });
       if (isMounted) {
-        if (!error && data) {
+        if (queryError) {
+          setError(queryError.message || 'Failed to fetch conversations');
+        } else if (data) {
           const formatted = data.map((conv: any) => ({
             ...conv, tags: conv.tags ?? [],
             contact: Array.isArray(conv.contact) ? conv.contact[0] : conv.contact,
@@ -83,7 +90,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
   };
   const channelColors: Record<string, string> = {
     whatsapp: 'text-emerald-500 bg-emerald-500/10', email: 'text-blue-500 bg-blue-500/10',
-    instagram: 'text-pink-500 bg-pink-500/10', web_widget: 'text-slate-500 bg-white/[0.04]',
+    instagram: 'text-pink-500 bg-pink-500/10', web_widget: 'text-slate-500 bg-zinc-100 dark:bg-white/[0.04]',
   };
 
   const priorityDistribution = useMemo(() => {
@@ -105,7 +112,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
   const csatScores = useMemo(() => {
     const scores: number[] = [];
     conversations.forEach(c => {
-      const csat = c.metadata?.csat;
+      const csat = (c.metadata as any)?.csat;
       if (csat?.score != null) scores.push(Number(csat.score));
     });
     const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
@@ -163,6 +170,42 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
           </div>
         </div>
 
+        {/* Supabase Unconfigured Banner */}
+        {error === 'database_unconfigured' && (
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.03] p-5 mb-6 flex items-start gap-4">
+            <div className="h-9 w-9 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/10 shrink-0">
+              <AlertTriangle className="h-4.5 w-4.5 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xs font-bold theme-text-main uppercase tracking-wider">Database Connection Pending</h3>
+              <p className="text-xs theme-text-secondary mt-1.5 leading-relaxed font-medium">
+                Lets Chat is running in sandbox mode with offline capabilities. To start receiving live customer WhatsApp messages and creating tickets, please configure your Supabase connection.
+              </p>
+              <button
+                onClick={() => onNavigate('settings')}
+                className="mt-3.5 inline-flex items-center gap-1.5 rounded-lg border border-amber-550/20 hover:border-amber-550/40 bg-amber-500/5 hover:bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 transition-all cursor-pointer"
+              >
+                Configure Supabase Connection
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Database Error Banner */}
+        {error && error !== 'database_unconfigured' && (
+          <div className="rounded-xl border border-red-500/20 bg-red-500/[0.03] p-5 mb-6 flex items-start gap-4">
+            <div className="h-9 w-9 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/10 shrink-0">
+              <AlertTriangle className="h-4.5 w-4.5 text-red-500" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xs font-bold theme-text-main uppercase tracking-wider">Database Error</h3>
+              <p className="text-xs theme-text-secondary mt-1.5 leading-relaxed font-medium">
+                {error}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Alert Banner for urgent */}
         {urgentCount > 0 && (
           <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-3 mb-6 animate-fade-in">
@@ -186,14 +229,14 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
                   <div key={type}>
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className={`p-1 rounded ${channelColors[type] || 'bg-white/[0.04] text-slate-500'}`}>
+                        <div className={`p-1 rounded ${channelColors[type] || 'bg-zinc-100 dark:bg-white/[0.04] text-slate-500'}`}>
                           <Icon className="h-3 w-3" />
                         </div>
                         <span className="text-[11px] font-medium theme-text-secondary capitalize">{type.replace('_', ' ')}</span>
                       </div>
                       <span className="text-[11px] font-bold theme-text-main">{count}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/[0.04] overflow-hidden">
                       <div className="h-full rounded-full bg-emerald-500/60 transition-all duration-500" style={{ width: `${Math.max(pct, 3)}%` }} />
                     </div>
                   </div>
@@ -215,7 +258,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
                       <span className="text-[11px] font-medium capitalize theme-text-secondary">{priority}</span>
                       <span className="text-[11px] font-bold theme-text-main">{count}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/[0.04] overflow-hidden">
                       <div className={`h-full rounded-full ${priorityColors[priority] || 'bg-slate-500'} transition-all duration-500`} style={{ width: `${Math.max(pct, 3)}%` }} />
                     </div>
                   </div>
@@ -239,7 +282,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
                       <span className="text-[11px] font-medium capitalize theme-text-secondary">{status.replace('_', ' ')}</span>
                       <span className="text-[11px] font-bold theme-text-main">{count}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/[0.04] overflow-hidden">
                       <div className={`h-full rounded-full ${statusColors[status] || 'bg-slate-500'} transition-all duration-500`} style={{ width: `${Math.max(pct, 3)}%` }} />
                     </div>
                   </div>
@@ -299,7 +342,7 @@ export function DashboardView({ onNavigate, onSelectConversation }: DashboardVie
                           <AvatarFallback>{(conv.contact.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                       ) : (
-                        <div className="h-6 w-6 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-semibold text-slate-400">?</div>
+                        <div className="h-6 w-6 rounded-full bg-zinc-100 dark:bg-white/[0.06] flex items-center justify-center text-[10px] font-semibold text-slate-400">?</div>
                       )}
                       <div className="min-w-0">
                         <p className="font-semibold theme-text-main truncate">{conv.contact?.full_name ?? 'Unknown'}</p>
