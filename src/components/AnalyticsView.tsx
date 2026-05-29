@@ -178,9 +178,9 @@ export function AnalyticsView() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [dateFrom, setDateFrom] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - 30);
-    return d.toISOString().split('T')[0];
+    return formatLocalDate(d);
   });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [dateTo, setDateTo] = useState(() => formatLocalDate(new Date()));
 
   useEffect(() => {
     let isMounted = true;
@@ -205,8 +205,8 @@ export function AnalyticsView() {
           metadata,
           channel:channels(channel_type)
         `);
-      if (dateFrom) convQuery = convQuery.gte('created_at', dateFrom + 'T00:00:00Z');
-      if (dateTo) convQuery = convQuery.lte('created_at', dateTo + 'T23:59:59Z');
+      if (dateFrom) { const d = parseLocalDate(dateFrom); convQuery = convQuery.gte('created_at', d.toISOString()); }
+      if (dateTo) { const d = parseLocalDate(dateTo); d.setHours(23, 59, 59, 999); convQuery = convQuery.lte('created_at', d.toISOString()); }
       const { data: convs, error: convsError } = await convQuery;
 
       if (convsError) {
@@ -219,8 +219,8 @@ export function AnalyticsView() {
       let msgQuery = supabase
         .from('messages')
         .select('conversation_id, sender_type, sender_id, created_at, metadata');
-      if (dateFrom) msgQuery = msgQuery.gte('created_at', dateFrom + 'T00:00:00Z');
-      if (dateTo) msgQuery = msgQuery.lte('created_at', dateTo + 'T23:59:59Z');
+      if (dateFrom) { const d = parseLocalDate(dateFrom); msgQuery = msgQuery.gte('created_at', d.toISOString()); }
+      if (dateTo) { const d = parseLocalDate(dateTo); d.setHours(23, 59, 59, 999); msgQuery = msgQuery.lte('created_at', d.toISOString()); }
       const { data: allMsgs } = await msgQuery;
 
       // Fetch registered users to display in Agent Performance
