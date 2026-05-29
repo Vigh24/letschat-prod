@@ -839,7 +839,7 @@ export function AnalyticsView() {
 
         <div className="glass-card p-5 overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/[0.02] to-transparent pointer-events-none" />
-          <div className="flex items-center justify-between mb-6 relative">
+          <div className="flex items-center justify-between mb-4 relative">
             <h3 className="text-xs font-bold theme-text-main flex items-center gap-2 uppercase tracking-wider">
               <Users className="h-4 w-4 text-emerald-500" />Agent Performance
             </h3>
@@ -847,170 +847,129 @@ export function AnalyticsView() {
           </div>
 
           {agentPerformance.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 relative">
-              {agentPerformance.map((a, idx) => {
-                const csatNum = a.csat !== '—' ? parseFloat(a.csat) : null;
-                const csatPct = csatNum !== null ? (csatNum / 5) * 100 : 0;
-                let speedScore = 50;
-                if (a.firstResp !== '—') {
-                  const num = parseInt(a.firstResp);
-                  if (a.firstResp.includes('s')) speedScore = num <= 15 ? 100 : num <= 30 ? 90 : num <= 60 ? 80 : 70;
-                  else if (a.firstResp.includes('m')) speedScore = num <= 2 ? 75 : num <= 5 ? 60 : num <= 10 ? 40 : 25;
-                  else if (a.firstResp.includes('h')) speedScore = num <= 1 ? 30 : num <= 2 ? 20 : 10;
-                }
-                const score = Math.round(csatPct * 0.35 + a.rate * 0.35 + speedScore * 0.3);
-                const resolvedCount = Math.round(a.convos * a.rate / 100);
-                const scoreColor = score >= 90 ? '#10b981' : score >= 75 ? '#3b82f6' : score >= 60 ? '#f59e0b' : '#ef4444';
-                const scoreGlow = score >= 90 ? 'shadow-emerald-500/15' : score >= 75 ? 'shadow-blue-500/15' : score >= 60 ? 'shadow-amber-500/15' : 'shadow-red-500/15';
-                const scoreBg = score >= 90 ? 'from-emerald-500/5 to-emerald-500/[0.02]' : score >= 75 ? 'from-blue-500/5 to-blue-500/[0.02]' : score >= 60 ? 'from-amber-500/5 to-amber-500/[0.02]' : 'from-red-500/5 to-red-500/[0.02]';
-                const rateColor = a.rate >= 95 ? 'text-emerald-500' : a.rate >= 80 ? 'text-blue-500' : a.rate >= 60 ? 'text-amber-500' : 'text-red-500';
-                const rateBar = a.rate >= 95 ? 'bg-emerald-500' : a.rate >= 80 ? 'bg-blue-500' : a.rate >= 60 ? 'bg-amber-500' : 'bg-red-500';
-                const circumference = 2 * Math.PI * 40;
-                const strokeDashoffset = circumference - (score / 100) * circumference;
-                const csatTotal = Object.values(a.csatDist).reduce((s, v) => s + v, 0);
+            <div className="relative">
+              {/* Table header */}
+              <div className="hidden sm:grid sm:grid-cols-[minmax(160px,1.5fr)_64px_64px_64px_64px_100px] gap-x-2 px-3 pb-2 border-b theme-border">
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider">Agent</span>
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider text-center">Resolved</span>
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider text-center">1st Resp</span>
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider text-center">Resolve</span>
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider text-center">CSAT</span>
+                <span className="text-[9px] font-semibold theme-text-muted uppercase tracking-wider text-right">Resolution</span>
+              </div>
 
-                return (
-                  <div
-                    key={a.name}
-                    className={`group relative rounded-lg border theme-border bg-gradient-to-b ${scoreBg} hover:border-emerald-500/20 transition-all duration-300 overflow-hidden shadow-sm ${scoreGlow} hover:shadow-md`}
-                  >
-                    {/* Top accent stripe */}
-                    <div className="h-[2px] w-full" style={{ background: `linear-gradient(90deg, ${scoreColor}33, ${scoreColor}, ${scoreColor}33)` }} />
+              {/* Agent rows */}
+              <div className="flex flex-col">
+                {agentPerformance.map((a, idx) => {
+                  const csatNum = a.csat !== '—' ? parseFloat(a.csat) : null;
+                  const csatPct = csatNum !== null ? (csatNum / 5) * 100 : 0;
+                  let speedScore = 50;
+                  if (a.firstResp !== '—') {
+                    const num = parseInt(a.firstResp);
+                    if (a.firstResp.includes('s')) speedScore = num <= 15 ? 100 : num <= 30 ? 90 : num <= 60 ? 80 : 70;
+                    else if (a.firstResp.includes('m')) speedScore = num <= 2 ? 75 : num <= 5 ? 60 : num <= 10 ? 40 : 25;
+                    else if (a.firstResp.includes('h')) speedScore = num <= 1 ? 30 : num <= 2 ? 20 : 10;
+                  }
+                  const score = Math.round(csatPct * 0.35 + a.rate * 0.35 + speedScore * 0.3);
+                  const resolvedCount = Math.round(a.convos * a.rate / 100);
+                  const scoreColor = score >= 90 ? '#10b981' : score >= 75 ? '#3b82f6' : score >= 60 ? '#f59e0b' : '#ef4444';
+                  const rateColor = a.rate >= 95 ? 'text-emerald-500' : a.rate >= 80 ? 'text-blue-500' : a.rate >= 60 ? 'text-amber-500' : 'text-red-500';
+                  const rateBar = a.rate >= 95 ? 'bg-emerald-500' : a.rate >= 80 ? 'bg-blue-500' : a.rate >= 60 ? 'bg-amber-500' : 'bg-red-500';
+                  const circumference = 2 * Math.PI * 15;
+                  const strokeDashoffset = circumference - (score / 100) * circumference;
 
-                    {/* Agent Header + Gauge + Stats in one block */}
-                    <div className="px-3 pt-2.5 pb-2 flex items-center gap-3">
-                      {/* Radial Score Gauge */}
-                      <div className="relative shrink-0" title={`Composite Score: ${score}/100`}>
-                        <svg className="-rotate-90" width="56" height="56" viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="40" fill="none" className="stroke-zinc-200/30 dark:stroke-zinc-700/30" strokeWidth="7" />
-                          <circle
-                            cx="50" cy="50" r="40" fill="none"
-                            stroke={scoreColor}
-                            strokeWidth="7"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={strokeDashoffset}
-                            strokeLinecap="round"
-                            className="transition-all duration-1000 ease-out"
-                            style={{ filter: `drop-shadow(0 0 3px ${scoreColor}40)` }}
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-sm font-extrabold theme-text-main leading-none tabular-nums">{score}</span>
-                          <span className="text-[6px] theme-text-muted font-semibold uppercase tracking-wider mt-px">Score</span>
+                  return (
+                    <div
+                      key={a.name}
+                      className="group grid grid-cols-[1fr] sm:grid-cols-[minmax(160px,1.5fr)_64px_64px_64px_64px_100px] gap-x-2 items-center px-3 py-2 border-b theme-border-extra-subtle last:border-0 hover:bg-white/[0.03] dark:hover:bg-white/[0.02] transition-colors duration-150 rounded-md"
+                    >
+                      {/* Agent info: score ring + avatar + name */}
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Mini score ring */}
+                        <div className="relative shrink-0" title={`Score: ${score}/100`}>
+                          <svg className="-rotate-90" width="32" height="32" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="15" fill="none" className="stroke-zinc-200/40 dark:stroke-zinc-700/40" strokeWidth="2.5" />
+                            <circle
+                              cx="18" cy="18" r="15" fill="none"
+                              stroke={scoreColor}
+                              strokeWidth="2.5"
+                              strokeDasharray={circumference}
+                              strokeDashoffset={strokeDashoffset}
+                              strokeLinecap="round"
+                              className="transition-all duration-1000 ease-out"
+                            />
+                          </svg>
+                          <span className="absolute inset-0 flex items-center justify-center text-[8px] font-extrabold theme-text-main tabular-nums">{score}</span>
+                        </div>
+
+                        {/* Avatar + name */}
+                        <div className="relative shrink-0">
+                          <Avatar size="sm">
+                            <AvatarFallback>{a.name.charAt(0).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          {idx < 3 && (
+                            <span className="absolute -top-1 -right-1.5 text-[8px] drop-shadow-md">
+                              {['🥇', '🥈', '🥉'][idx]}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold theme-text-main text-[12px] leading-tight truncate">{a.name}</p>
+                          <p className="text-[9px] theme-text-muted leading-tight">{a.role}</p>
                         </div>
                       </div>
 
-                      {/* Agent Info + Stats */}
-                      <div className="flex-1 min-w-0">
-                        {/* Name row */}
-                        <div className="flex items-center gap-1.5 mb-1.5">
-                          <div className="relative shrink-0">
-                            <Avatar size="sm">
-                              <AvatarFallback>{a.name.charAt(0).toUpperCase()}</AvatarFallback>
-                            </Avatar>
-                            {idx < 3 && (
-                              <span className="absolute -top-1 -right-1 text-[9px] drop-shadow-lg">
-                                {['🥇', '🥈', '🥉'][idx]}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold theme-text-main text-xs leading-tight truncate">{a.name}</p>
-                            <p className="text-[9px] theme-text-muted leading-tight">{a.role}</p>
-                          </div>
+                      {/* Stats — stacked on mobile, inline cells on sm+ */}
+                      <div className="flex sm:contents items-center gap-3 mt-1.5 sm:mt-0 pl-[72px] sm:pl-0 flex-wrap">
+                        {/* Resolved */}
+                        <div className="text-center">
+                          <span className="text-[11px] font-bold theme-text-main tabular-nums">{resolvedCount}</span>
+                          <span className="text-[9px] theme-text-muted font-normal">/{a.convos}</span>
+                          <span className="text-[8px] theme-text-muted uppercase tracking-wider block sm:hidden">Resolved</span>
                         </div>
 
-                        {/* Stats 2x2 grid */}
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                          <div className="flex items-baseline gap-1">
-                            <Ticket className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
-                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">Rsv</span>
-                            <span className="text-[11px] font-bold theme-text-main tabular-nums leading-none ml-auto">{resolvedCount}<span className="text-[9px] theme-text-muted font-normal">/{a.convos}</span></span>
-                          </div>
+                        {/* 1st Resp */}
+                        <div className="text-center">
+                          <span className="text-[11px] font-semibold theme-text-secondary font-mono tabular-nums">{a.firstResp}</span>
+                          <span className="text-[8px] theme-text-muted uppercase tracking-wider block sm:hidden">1st Resp</span>
+                        </div>
 
-                          <div className="flex items-baseline gap-1">
-                            <Clock className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
-                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">1st</span>
-                            <span className="text-[11px] font-bold theme-text-main font-mono tabular-nums leading-none ml-auto">{a.firstResp}</span>
-                          </div>
+                        {/* Avg Resolve */}
+                        <div className="text-center">
+                          <span className="text-[11px] font-semibold theme-text-secondary font-mono tabular-nums">{a.avgResolve}</span>
+                          <span className="text-[8px] theme-text-muted uppercase tracking-wider block sm:hidden">Resolve</span>
+                        </div>
 
-                          <div className="flex items-baseline gap-1">
-                            <TrendingUp className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
-                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">Avg</span>
-                            <span className="text-[11px] font-bold theme-text-main font-mono tabular-nums leading-none ml-auto">{a.avgResolve}</span>
-                          </div>
+                        {/* CSAT */}
+                        <div className="text-center">
+                          {csatNum !== null ? (
+                            <div className="flex flex-col items-center gap-0.5">
+                              <div className="flex gap-[1px]">
+                                {[1, 2, 3, 4, 5].map(s => (
+                                  <span key={s} className={`text-[8px] ${s <= Math.round(csatNum) ? 'text-amber-400' : 'text-zinc-500 dark:text-zinc-700'}`}>★</span>
+                                ))}
+                              </div>
+                              <span className="text-[10px] font-bold theme-text-main tabular-nums leading-none">{a.csat}</span>
+                            </div>
+                          ) : (
+                            <span className="text-[11px] theme-text-muted">—</span>
+                          )}
+                        </div>
 
-                          <div className="flex items-baseline gap-1">
-                            <Star className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
-                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">CSAT</span>
-                            {csatNum !== null ? (
-                              <span className="ml-auto flex items-center gap-1">
-                                <span className="text-[11px] font-bold theme-text-main tabular-nums leading-none">{a.csat}</span>
-                                <span className="flex gap-[1px]">{[1,2,3,4,5].map(s => <span key={s} className={`text-[7px] ${s <= Math.round(csatNum) ? 'text-amber-400' : 'text-zinc-600 dark:text-zinc-700'}`}>★</span>)}</span>
-                              </span>
-                            ) : (
-                              <span className="text-[11px] font-bold theme-text-muted leading-none ml-auto">—</span>
-                            )}
+                        {/* Resolution Rate */}
+                        <div className="min-w-[80px] sm:min-w-0">
+                          <div className="flex items-center justify-end gap-2 mb-0.5">
+                            <span className={`text-[10px] font-bold tabular-nums leading-none ${rateColor}`}>{a.rate}%</span>
+                          </div>
+                          <div className="h-1 rounded-full bg-zinc-200/50 dark:bg-white/[0.06] overflow-hidden">
+                            <div className={`h-full rounded-full transition-all duration-700 ${rateBar}`} style={{ width: `${a.rate}%` }} />
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    {/* Bottom: Resolution Rate + CSAT breakdown */}
-                    <div className="px-3 pb-2.5 space-y-2">
-                      {/* Resolution Rate Bar */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[9px] theme-text-secondary font-semibold">Resolution Rate</span>
-                          <span className={`text-[10px] font-bold tabular-nums ${rateColor}`}>{a.rate}%</span>
-                        </div>
-                        <div className="h-1 rounded-full bg-zinc-200/50 dark:bg-white/[0.06] overflow-hidden">
-                          <div className={`h-full rounded-full transition-all duration-700 ease-out ${rateBar}`} style={{ width: `${a.rate}%` }} />
-                        </div>
-                      </div>
-
-                      {/* CSAT Micro Distribution */}
-                      {csatTotal > 0 && (
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] theme-text-secondary font-semibold">Rating Breakdown</span>
-                            <span className="text-[9px] theme-text-muted font-mono tabular-nums">{csatTotal} review{csatTotal !== 1 ? 's' : ''}</span>
-                          </div>
-                          <div className="flex h-1.5 rounded-full overflow-hidden gap-[1px]">
-                            {[5, 4, 3, 2, 1].map(star => {
-                              const count = a.csatDist[star] || 0;
-                              const pct = csatTotal > 0 ? (count / csatTotal) * 100 : 0;
-                              if (pct === 0) return null;
-                              const barColor = star >= 4 ? 'bg-emerald-500' : star === 3 ? 'bg-amber-500' : 'bg-red-400';
-                              return (
-                                <div
-                                  key={star}
-                                  className={`${barColor} transition-all duration-500 first:rounded-l-full last:rounded-r-full`}
-                                  style={{ width: `${pct}%`, minWidth: pct > 0 ? '4px' : '0' }}
-                                  title={`${star}★ — ${count} (${pct.toFixed(0)}%)`}
-                                />
-                              );
-                            })}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            {[5, 4, 3, 2, 1].map(star => {
-                              const count = a.csatDist[star] || 0;
-                              if (count === 0) return null;
-                              const dotColor = star >= 4 ? 'bg-emerald-500' : star === 3 ? 'bg-amber-500' : 'bg-red-400';
-                              return (
-                                <span key={star} className="flex items-center gap-0.5">
-                                  <span className={`h-1 w-1 rounded-full ${dotColor}`} />
-                                  <span className="text-[7px] theme-text-muted font-mono">{star}★{count}</span>
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <div className="text-center py-12">
