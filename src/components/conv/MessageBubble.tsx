@@ -32,8 +32,8 @@ export function MessageBubble({
       ? 'You'
       : (msg.metadata?.sender_name || agents.find(a => a.id === msg.sender_id)?.full_name || 'Agent');
     return (
-      <div className="flex justify-center my-3 px-4">
-        <div className="w-full max-w-[85%] note-card px-4 py-3 group">
+    <div className="flex justify-center my-3 px-4">
+      <div className="w-full max-w-[85%] md:max-w-[600px] note-card px-4 py-3 group">
           <div className="flex items-start gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5" style={{ backgroundColor: 'var(--note-icon-bg)' }}>
               <StickyNote className="h-4 w-4" style={{ color: 'var(--note-icon)' }} />
@@ -122,7 +122,7 @@ export function MessageBubble({
           })()}
         </div>
       )}
-      <div className={`max-w-[72%] ${isOutgoing ? 'items-end' : 'items-start'} flex flex-col gap-1 transition-transform duration-200 hover:translate-y-[-1px]`}>
+      <div className={`max-w-[72%] md:max-w-[560px] ${isOutgoing ? 'items-end' : 'items-start'} flex flex-col gap-1 transition-transform duration-200 hover:translate-y-[-1px]`}>
         <div className={`rounded-2xl px-4 py-2.5 text-sm font-medium leading-relaxed shadow-sm overflow-hidden transition-all duration-200 ${
           msg.metadata?.is_internal
             ? 'bg-amber-500/5 dark:bg-amber-500/10 text-amber-900 dark:text-amber-200 border border-amber-500/25 rounded-br-sm shadow-[0_0_12px_rgba(245,158,11,0.03)] dark:shadow-[0_0_12px_rgba(245,158,11,0.06)]'

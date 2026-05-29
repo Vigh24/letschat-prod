@@ -1006,7 +1006,7 @@ export function InboxView({ selectedConvId: propSelectedConvId, setSelectedConvI
   // Sidebar resize state
   const [leftWidth, setLeftWidth] = useState(() => {
     const saved = localStorage.getItem('letschat-left-sidebar-width');
-    return saved ? parseInt(saved, 10) : 384;
+    return saved ? parseInt(saved, 10) : 340;
   });
   const [rightWidth, setRightWidth] = useState(() => {
     const saved = localStorage.getItem('letschat-right-sidebar-width');

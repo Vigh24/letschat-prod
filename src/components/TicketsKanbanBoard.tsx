@@ -425,56 +425,58 @@ export function TicketsKanbanBoard({ onSelectTicket }: TicketsKanbanBoardProps) 
       {/* List view */}
       {viewMode === 'list' && (
         <div className="flex-1 overflow-y-auto p-5">
-          {filteredTickets.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Inbox className="h-8 w-8 text-slate-300 dark:text-zinc-600 mb-2" />
-              <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">No tickets found</p>
-              <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">
-                {searchQuery ? 'Try a different search term' : 'Tickets will appear when customers message via WhatsApp'}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              {filteredTickets.map(conv => (
-                  <div
-                    key={conv.id}
-                    onClick={() => onSelectTicket(conv.id)}
-                    className="flex items-center gap-4 rounded-xl border border-slate-200/60 dark:border-white/[0.06] px-4 py-3 text-xs cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group"
-                  >
-                    <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 font-mono shrink-0">
-                      {conv.ticket_id || '—'}
-                    </span>
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <Avatar size="sm">
-                        {conv.contact?.avatar_url ? <AvatarImage src={conv.contact.avatar_url} alt={conv.contact.full_name || ''} /> : null}
-                        <AvatarFallback>{(conv.contact?.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-slate-800 dark:text-zinc-100 truncate">{conv.contact?.full_name ?? 'Unknown'}</p>
-                        <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">{conv.subject ?? 'No subject'}</p>
+          <div className="max-w-5xl mx-auto w-full">
+            {filteredTickets.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <Inbox className="h-8 w-8 text-slate-300 dark:text-zinc-600 mb-2" />
+                <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">No tickets found</p>
+                <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">
+                  {searchQuery ? 'Try a different search term' : 'Tickets will appear when customers message via WhatsApp'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {filteredTickets.map(conv => (
+                    <div
+                      key={conv.id}
+                      onClick={() => onSelectTicket(conv.id)}
+                      className="flex items-center gap-4 rounded-xl border border-slate-200/60 dark:border-white/[0.06] px-4 py-3 text-xs cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all group"
+                    >
+                      <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 font-mono shrink-0">
+                        {conv.ticket_id || '—'}
+                      </span>
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <Avatar size="sm">
+                          {conv.contact?.avatar_url ? <AvatarImage src={conv.contact.avatar_url} alt={conv.contact.full_name || ''} /> : null}
+                          <AvatarFallback>{(conv.contact?.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-800 dark:text-zinc-100 truncate">{conv.contact?.full_name ?? 'Unknown'}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">{conv.subject ?? 'No subject'}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <PriorityDot priority={conv.priority} />
-                      <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase border ${
-                        conv.status === 'open' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
-                        conv.status === 'pending' ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20' :
-                        conv.status === 'resolved' ? 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20' :
-                        'text-slate-500 dark:text-zinc-400 bg-white/[0.04] border-white/[0.08]'
-                      }`}>
-                        {conv.status === 'awaiting_response' ? 'Awaiting' : conv.status}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <PriorityDot priority={conv.priority} />
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase border ${
+                          conv.status === 'open' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
+                          conv.status === 'pending' ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20' :
+                          conv.status === 'resolved' ? 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20' :
+                          'text-slate-500 dark:text-zinc-400 bg-white/[0.04] border-white/[0.08]'
+                        }`}>
+                          {conv.status === 'awaiting_response' ? 'Awaiting' : conv.status}
+                        </span>
+                      </div>
+                      {conv.channel && (
+                        <span className="text-[9px] text-slate-500 dark:text-zinc-400 shrink-0">{conv.channel.channel_type}</span>
+                      )}
+                      <span className="text-[10px] text-slate-400 dark:text-zinc-500 font-mono shrink-0">
+                        {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
                       </span>
                     </div>
-                    {conv.channel && (
-                      <span className="text-[9px] text-slate-500 dark:text-zinc-400 shrink-0">{conv.channel.channel_type}</span>
-                    )}
-                    <span className="text-[10px] text-slate-400 dark:text-zinc-500 font-mono shrink-0">
-                      {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true })}
-                    </span>
-                  </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
