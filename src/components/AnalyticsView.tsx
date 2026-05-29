@@ -847,7 +847,7 @@ export function AnalyticsView() {
           </div>
 
           {agentPerformance.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 relative">
               {agentPerformance.map((a, idx) => {
                 const csatNum = a.csat !== '—' ? parseFloat(a.csat) : null;
                 const csatPct = csatNum !== null ? (csatNum / 5) * 100 : 0;
@@ -872,111 +872,99 @@ export function AnalyticsView() {
                 return (
                   <div
                     key={a.name}
-                    className={`group relative rounded-xl border theme-border bg-gradient-to-b ${scoreBg} hover:border-emerald-500/20 transition-all duration-300 overflow-hidden shadow-sm ${scoreGlow} hover:shadow-md`}
+                    className={`group relative rounded-lg border theme-border bg-gradient-to-b ${scoreBg} hover:border-emerald-500/20 transition-all duration-300 overflow-hidden shadow-sm ${scoreGlow} hover:shadow-md`}
                   >
                     {/* Top accent stripe */}
                     <div className="h-[2px] w-full" style={{ background: `linear-gradient(90deg, ${scoreColor}33, ${scoreColor}, ${scoreColor}33)` }} />
 
-                    {/* Agent Header */}
-                    <div className="px-4 pt-4 pb-3 flex items-center gap-3">
-                      <div className="relative shrink-0">
-                        <Avatar size="md">
-                          <AvatarFallback>{a.name.charAt(0).toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                        {idx < 3 && (
-                          <span className="absolute -top-1.5 -right-1.5 text-sm drop-shadow-lg">
-                            {['🥇', '🥈', '🥉'][idx]}
-                          </span>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-bold theme-text-main text-sm leading-tight truncate">{a.name}</p>
-                        <p className="text-[10px] theme-text-muted mt-0.5">{a.role}</p>
-                      </div>
-                    </div>
-
-                    {/* Score Gauge + Key Stats */}
-                    <div className="px-4 pb-4 flex items-center gap-5">
+                    {/* Agent Header + Gauge + Stats in one block */}
+                    <div className="px-3 pt-2.5 pb-2 flex items-center gap-3">
                       {/* Radial Score Gauge */}
                       <div className="relative shrink-0" title={`Composite Score: ${score}/100`}>
-                        <svg className="-rotate-90" width="80" height="80" viewBox="0 0 100 100">
-                          <circle cx="50" cy="50" r="40" fill="none" className="stroke-zinc-200/30 dark:stroke-zinc-700/30" strokeWidth="6" />
+                        <svg className="-rotate-90" width="56" height="56" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="40" fill="none" className="stroke-zinc-200/30 dark:stroke-zinc-700/30" strokeWidth="7" />
                           <circle
                             cx="50" cy="50" r="40" fill="none"
                             stroke={scoreColor}
-                            strokeWidth="6"
+                            strokeWidth="7"
                             strokeDasharray={circumference}
                             strokeDashoffset={strokeDashoffset}
                             strokeLinecap="round"
                             className="transition-all duration-1000 ease-out"
-                            style={{ filter: `drop-shadow(0 0 4px ${scoreColor}40)` }}
+                            style={{ filter: `drop-shadow(0 0 3px ${scoreColor}40)` }}
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-lg font-extrabold theme-text-main leading-none tabular-nums">{score}</span>
-                          <span className="text-[8px] theme-text-muted font-semibold uppercase tracking-wider mt-0.5">Score</span>
+                          <span className="text-sm font-extrabold theme-text-main leading-none tabular-nums">{score}</span>
+                          <span className="text-[6px] theme-text-muted font-semibold uppercase tracking-wider mt-px">Score</span>
                         </div>
                       </div>
 
-                      {/* Stats Grid */}
-                      <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-2.5">
-                        <div>
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <Ticket className="h-2.5 w-2.5 theme-text-muted" />
-                            <span className="text-[9px] theme-text-muted font-semibold uppercase tracking-wider">Resolved</span>
+                      {/* Agent Info + Stats */}
+                      <div className="flex-1 min-w-0">
+                        {/* Name row */}
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="relative shrink-0">
+                            <Avatar size="sm">
+                              <AvatarFallback>{a.name.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            {idx < 3 && (
+                              <span className="absolute -top-1 -right-1 text-[9px] drop-shadow-lg">
+                                {['🥇', '🥈', '🥉'][idx]}
+                              </span>
+                            )}
                           </div>
+                          <div className="min-w-0">
+                            <p className="font-bold theme-text-main text-xs leading-tight truncate">{a.name}</p>
+                            <p className="text-[9px] theme-text-muted leading-tight">{a.role}</p>
+                          </div>
+                        </div>
+
+                        {/* Stats 2x2 grid */}
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                           <div className="flex items-baseline gap-1">
-                            <span className="text-base font-bold theme-text-main tabular-nums leading-none">{resolvedCount}</span>
-                            <span className="text-[10px] theme-text-muted">/ {a.convos}</span>
+                            <Ticket className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
+                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">Rsv</span>
+                            <span className="text-[11px] font-bold theme-text-main tabular-nums leading-none ml-auto">{resolvedCount}<span className="text-[9px] theme-text-muted font-normal">/{a.convos}</span></span>
                           </div>
-                        </div>
 
-                        <div>
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <Clock className="h-2.5 w-2.5 theme-text-muted" />
-                            <span className="text-[9px] theme-text-muted font-semibold uppercase tracking-wider">1st Resp</span>
+                          <div className="flex items-baseline gap-1">
+                            <Clock className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
+                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">1st</span>
+                            <span className="text-[11px] font-bold theme-text-main font-mono tabular-nums leading-none ml-auto">{a.firstResp}</span>
                           </div>
-                          <span className="text-base font-bold theme-text-main font-mono tabular-nums leading-none">{a.firstResp}</span>
-                        </div>
 
-                        <div>
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <TrendingUp className="h-2.5 w-2.5 theme-text-muted" />
-                            <span className="text-[9px] theme-text-muted font-semibold uppercase tracking-wider">Resolve</span>
+                          <div className="flex items-baseline gap-1">
+                            <TrendingUp className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
+                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">Avg</span>
+                            <span className="text-[11px] font-bold theme-text-main font-mono tabular-nums leading-none ml-auto">{a.avgResolve}</span>
                           </div>
-                          <span className="text-base font-bold theme-text-main font-mono tabular-nums leading-none">{a.avgResolve}</span>
-                        </div>
 
-                        <div>
-                          <div className="flex items-center gap-1 mb-0.5">
-                            <Star className="h-2.5 w-2.5 theme-text-muted" />
-                            <span className="text-[9px] theme-text-muted font-semibold uppercase tracking-wider">CSAT</span>
+                          <div className="flex items-baseline gap-1">
+                            <Star className="h-2 w-2 theme-text-muted shrink-0 relative top-[1px]" />
+                            <span className="text-[8px] theme-text-muted uppercase tracking-wider">CSAT</span>
+                            {csatNum !== null ? (
+                              <span className="ml-auto flex items-center gap-1">
+                                <span className="text-[11px] font-bold theme-text-main tabular-nums leading-none">{a.csat}</span>
+                                <span className="flex gap-[1px]">{[1,2,3,4,5].map(s => <span key={s} className={`text-[7px] ${s <= Math.round(csatNum) ? 'text-amber-400' : 'text-zinc-600 dark:text-zinc-700'}`}>★</span>)}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-bold theme-text-muted leading-none ml-auto">—</span>
+                            )}
                           </div>
-                          {csatNum !== null ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-base font-bold theme-text-main tabular-nums leading-none">{a.csat}</span>
-                              <div className="flex gap-[2px]">
-                                {[1, 2, 3, 4, 5].map(s => (
-                                  <span key={s} className={`text-[9px] ${s <= Math.round(csatNum) ? 'text-amber-400' : 'text-zinc-600 dark:text-zinc-700'}`}>★</span>
-                                ))}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-base font-bold theme-text-muted leading-none">—</span>
-                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Bottom Section: Resolution Rate + CSAT breakdown */}
-                    <div className="px-4 pb-4 space-y-3">
+                    {/* Bottom: Resolution Rate + CSAT breakdown */}
+                    <div className="px-3 pb-2.5 space-y-2">
                       {/* Resolution Rate Bar */}
                       <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] theme-text-secondary font-semibold">Resolution Rate</span>
-                          <span className={`text-xs font-bold tabular-nums ${rateColor}`}>{a.rate}%</span>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[9px] theme-text-secondary font-semibold">Resolution Rate</span>
+                          <span className={`text-[10px] font-bold tabular-nums ${rateColor}`}>{a.rate}%</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/[0.06] overflow-hidden">
+                        <div className="h-1 rounded-full bg-zinc-200/50 dark:bg-white/[0.06] overflow-hidden">
                           <div className={`h-full rounded-full transition-all duration-700 ease-out ${rateBar}`} style={{ width: `${a.rate}%` }} />
                         </div>
                       </div>
@@ -984,11 +972,11 @@ export function AnalyticsView() {
                       {/* CSAT Micro Distribution */}
                       {csatTotal > 0 && (
                         <div>
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[10px] theme-text-secondary font-semibold">Rating Breakdown</span>
-                            <span className="text-[10px] theme-text-muted font-mono tabular-nums">{csatTotal} review{csatTotal !== 1 ? 's' : ''}</span>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] theme-text-secondary font-semibold">Rating Breakdown</span>
+                            <span className="text-[9px] theme-text-muted font-mono tabular-nums">{csatTotal} review{csatTotal !== 1 ? 's' : ''}</span>
                           </div>
-                          <div className="flex h-2 rounded-full overflow-hidden gap-[1px]">
+                          <div className="flex h-1.5 rounded-full overflow-hidden gap-[1px]">
                             {[5, 4, 3, 2, 1].map(star => {
                               const count = a.csatDist[star] || 0;
                               const pct = csatTotal > 0 ? (count / csatTotal) * 100 : 0;
@@ -997,27 +985,25 @@ export function AnalyticsView() {
                               return (
                                 <div
                                   key={star}
-                                  className={`${barColor} transition-all duration-500 first:rounded-l-full last:rounded-r-full relative group/bar`}
+                                  className={`${barColor} transition-all duration-500 first:rounded-l-full last:rounded-r-full`}
                                   style={{ width: `${pct}%`, minWidth: pct > 0 ? '4px' : '0' }}
                                   title={`${star}★ — ${count} (${pct.toFixed(0)}%)`}
                                 />
                               );
                             })}
                           </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <div className="flex items-center gap-2">
-                              {[5, 4, 3, 2, 1].map(star => {
-                                const count = a.csatDist[star] || 0;
-                                if (count === 0) return null;
-                                const dotColor = star >= 4 ? 'bg-emerald-500' : star === 3 ? 'bg-amber-500' : 'bg-red-400';
-                                return (
-                                  <span key={star} className="flex items-center gap-0.5">
-                                    <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
-                                    <span className="text-[8px] theme-text-muted font-mono">{star}★ {count}</span>
-                                  </span>
-                                );
-                              })}
-                            </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            {[5, 4, 3, 2, 1].map(star => {
+                              const count = a.csatDist[star] || 0;
+                              if (count === 0) return null;
+                              const dotColor = star >= 4 ? 'bg-emerald-500' : star === 3 ? 'bg-amber-500' : 'bg-red-400';
+                              return (
+                                <span key={star} className="flex items-center gap-0.5">
+                                  <span className={`h-1 w-1 rounded-full ${dotColor}`} />
+                                  <span className="text-[7px] theme-text-muted font-mono">{star}★{count}</span>
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
