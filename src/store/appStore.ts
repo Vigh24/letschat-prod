@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { ActiveView } from '@/types'
 
+export type AgentStatus = 'online' | 'offline' | 'break' | 'busy'
+
 type Theme = 'light' | 'dark'
 
 interface AppState {
@@ -8,10 +10,12 @@ interface AppState {
   theme: Theme
   sidebarCollapsed: boolean
   badgeCounts: { inbox: number; channels: number }
+  agentStatus: AgentStatus
   setActiveView: (view: ActiveView) => void
   toggleTheme: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
   setBadgeCounts: (counts: { inbox: number; channels: number }) => void
+  setAgentStatus: (status: AgentStatus) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -19,6 +23,7 @@ export const useAppStore = create<AppState>((set) => ({
   theme: (localStorage.getItem('theme') as Theme) || 'dark',
   sidebarCollapsed: false,
   badgeCounts: { inbox: 0, channels: 0 },
+  agentStatus: (localStorage.getItem('agentStatus') as AgentStatus) || 'online',
   setActiveView: (view) => set({ activeView: view }),
   toggleTheme: () =>
     set((state) => {
@@ -28,4 +33,29 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
   setBadgeCounts: (counts) => set({ badgeCounts: counts }),
+  setAgentStatus: (status) => {
+    localStorage.setItem('agentStatus', status)
+    
+    // Sync to static currentAgent object
+    import('@/data/appConfig').then(({ currentAgent }) => {
+      currentAgent.is_online = status === 'online' || status === 'busy'
+      
+      // Update database if configured
+      import('@/lib/supabase').then(async ({ supabase, isSupabaseConfigured }) => {
+        if (isSupabaseConfigured && currentAgent.id) {
+          try {
+            await supabase
+              .from('users')
+              .update({ is_online: status === 'online' || status === 'busy' })
+              .eq('id', currentAgent.id)
+          } catch (err) {
+            console.error('Failed to sync agent status to DB:', err)
+          }
+        }
+      })
+    })
+
+    set({ agentStatus: status })
+  },
 }))
+

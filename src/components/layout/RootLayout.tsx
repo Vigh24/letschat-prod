@@ -50,6 +50,16 @@ export function RootLayout() {
             currentAgent.email = dbUser.email
             currentAgent.full_name = dbUser.full_name
             currentAgent.role = dbUser.role
+            
+            // Sync status to store based on DB status if it differs
+            const currentStatus = useAppStore.getState().agentStatus
+            const localIsOnline = currentStatus === 'online' || currentStatus === 'busy'
+            if (dbUser.is_online !== localIsOnline) {
+              const initialStatus = dbUser.is_online ? 'online' : 'offline'
+              useAppStore.getState().setAgentStatus(initialStatus)
+            } else {
+              currentAgent.is_online = localIsOnline
+            }
           } else {
             const name = oauthName
             const { data: createdUser } = await supabase
@@ -63,6 +73,7 @@ export function RootLayout() {
               currentAgent.email = createdUser.email
               currentAgent.full_name = createdUser.full_name
               currentAgent.role = createdUser.role
+              useAppStore.getState().setAgentStatus('online')
             }
           }
         } catch (err) { console.error('Profile sync failed:', err) }
@@ -129,7 +140,18 @@ export function RootLayout() {
 
   const handleLogOut = async () => {
     const { supabase, isSupabaseConfigured } = await import('@/lib/supabase')
-    if (isSupabaseConfigured) await supabase.auth.signOut()
+    if (isSupabaseConfigured) {
+      const currentAgentId = currentAgent.id
+      if (currentAgentId) {
+        try {
+          await supabase.from('users').update({ is_online: false }).eq('id', currentAgentId)
+        } catch (err) {
+          console.error('Failed to set user offline in DB on logout:', err)
+        }
+      }
+      await supabase.auth.signOut()
+    }
+    useAppStore.getState().setAgentStatus('offline')
     navigate({ to: '/auth' })
   }
 

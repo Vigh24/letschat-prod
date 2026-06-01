@@ -1,11 +1,13 @@
+import { useState, useEffect, useRef } from 'react';
 import {
   Inbox, Ticket, Cpu, GraduationCap, Radio,
   Brain, Settings, BarChart3, Bell, LogOut,
-  Users, LayoutDashboard, X
+  Users, LayoutDashboard, X, ChevronUp
 } from 'lucide-react';
 import type { ActiveView } from '../types';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
-import { currentAgent, appOrg } from '../data/appConfig';
+import { currentAgent } from '../data/appConfig';
+import { useAppStore, type AgentStatus } from '../store/appStore';
 
 interface SidebarProps {
   activeView: ActiveView;
@@ -47,8 +49,86 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
+const getStatusColor = (status: AgentStatus) => {
+  switch (status) {
+    case 'online': return 'bg-emerald-500';
+    case 'busy': return 'bg-rose-500';
+    case 'break': return 'bg-amber-500';
+    case 'offline': return 'bg-zinc-500';
+    default: return 'bg-zinc-500';
+  }
+};
+
+function AgentStatusSelect() {
+  const agentStatus = useAppStore(s => s.agentStatus);
+  const setAgentStatus = useAppStore(s => s.setAgentStatus);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const options: { value: AgentStatus; label: string }[] = [
+    { value: 'online', label: 'Online' },
+    { value: 'busy', label: 'Busy' },
+    { value: 'break', label: 'Break' },
+    { value: 'offline', label: 'Offline' }
+  ];
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1 rounded-md px-1 py-0.5 text-[9px] font-semibold transition-all duration-200 cursor-pointer bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.06] hover:border-white/[0.08]"
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${getStatusColor(agentStatus)}`} />
+        <span className="theme-text-secondary leading-none capitalize">{agentStatus}</span>
+        <ChevronUp className={`h-2.5 w-2.5 text-zinc-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 bottom-full mb-1.5 z-[99] w-24 rounded-lg border theme-border theme-bg-panel shadow-2xl p-1 space-y-0.5 animate-scale-in">
+          {options.map(opt => {
+            const isSelected = opt.value === agentStatus;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  setAgentStatus(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-1.5 py-1 rounded text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-between ${
+                  isSelected 
+                    ? 'bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 font-black' 
+                    : 'theme-text-secondary hover:bg-white/[0.04] hover:theme-text-main'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className={`h-1 w-1 rounded-full ${getStatusColor(opt.value)}`} />
+                  <span>{opt.label}</span>
+                </div>
+                {isSelected && <span className="h-1 w-1 rounded-full bg-emerald-450 dark:bg-emerald-400" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut, open, onClose }: SidebarProps) {
   const sections = currentAgent.role === 'admin' ? ['Support', 'Manage'] : ['Support'];
+  const agentStatus = useAppStore(s => s.agentStatus);
 
   const sidebarContent = (
     <>
@@ -123,17 +203,15 @@ export function Sidebar({ activeView, onViewChange, badgeCounts, onLogOut, open,
               {currentAgent.avatar_url ? <AvatarImage src={currentAgent.avatar_url} alt={currentAgent.full_name} /> : null}
               <AvatarFallback>{currentAgent.full_name.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
-            {currentAgent.is_online && (
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-zinc-900 dark:ring-zinc-950" />
-            )}
+            <span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ${getStatusColor(agentStatus)} ring-2 ring-zinc-900 dark:ring-zinc-950`} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-bold theme-text-main leading-none">{currentAgent.full_name}</p>
-            <p className="truncate text-[9px] theme-text-muted font-semibold flex items-center gap-1 mt-1 leading-none">
-              <span>{appOrg.name}</span>
-              <span>·</span>
-              <span className="capitalize">{currentAgent.role}</span>
-            </p>
+            <div className="flex items-center gap-1 mt-1 leading-none flex-wrap">
+              <span className="capitalize text-[9px] theme-text-muted font-semibold">{currentAgent.role}</span>
+              <span className="theme-text-muted text-[9px]">•</span>
+              <AgentStatusSelect />
+            </div>
           </div>
           {onLogOut ? (
             <button onClick={onLogOut}
