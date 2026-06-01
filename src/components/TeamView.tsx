@@ -3,6 +3,17 @@ import { Loader, CheckCircle, AlertTriangle, Users, Eye, EyeOff, ChevronDown } f
 import { currentAgent } from '../data/appConfig';
 import { formatDistanceToNow } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/Avatar';
+import { useAppStore } from '../store/appStore';
+
+const getStatusDotColor = (status: string) => {
+  switch (status) {
+    case 'online': return 'bg-emerald-500';
+    case 'busy': return 'bg-rose-500';
+    case 'break': return 'bg-amber-500';
+    case 'offline': return 'bg-zinc-500';
+    default: return 'bg-zinc-500';
+  }
+};
 
 interface TeamUser {
   id: string;
@@ -172,8 +183,14 @@ export function TeamView() {
   const [saved, setSaved] = useState<string | null>(null);
   const [supabaseMode, setSupabaseMode] = useState<'LIVE' | 'MOCK'>('LIVE');
 
+  const statusActivities = useAppStore(s => s.statusActivities);
+  const setStatusActivities = useAppStore(s => s.setStatusActivities);
+  const agentStatus = useAppStore(s => s.agentStatus);
+
   useEffect(() => {
     let isMounted = true;
+    let realtimeChannel: any = null;
+
     import('../lib/supabase').then(async ({ supabase, isSupabaseConfigured }) => {
       if (isSupabaseConfigured) {
         setSupabaseMode('LIVE');
@@ -190,14 +207,44 @@ export function TeamView() {
           }
 
           // Fetch all users
-          const { data: usersData } = await supabase
-            .from('users')
-            .select('*')
-            .order('full_name', { ascending: true });
+          const fetchUsers = async () => {
+            const { data: usersData } = await supabase
+              .from('users')
+              .select('*')
+              .order('full_name', { ascending: true });
+            if (usersData && isMounted) {
+              setUsers(usersData);
+            }
+          };
 
-          if (usersData && isMounted) {
-            setUsers(usersData);
-          }
+          // Fetch status logs
+          const fetchLogs = async () => {
+            try {
+              const { data: logsData } = await supabase
+                .from('agent_status_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
+              if (logsData && isMounted) {
+                setStatusActivities(logsData);
+              }
+            } catch (err) {
+              console.warn('Failed to load status logs:', err);
+            }
+          };
+
+          await Promise.all([fetchUsers(), fetchLogs()]);
+
+          // Subscribe to changes on users & status logs table
+          realtimeChannel = supabase.channel('team-users-realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
+              fetchUsers();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'agent_status_logs' }, () => {
+              fetchLogs();
+            })
+            .subscribe();
+
         } catch (err) {
           console.error('Failed to load team data:', err);
         } finally {
@@ -219,7 +266,14 @@ export function TeamView() {
       }
     });
 
-    return () => { isMounted = false; };
+    return () => { 
+      isMounted = false; 
+      if (realtimeChannel) {
+        import('../lib/supabase').then(({ supabase }) => {
+          supabase.removeChannel(realtimeChannel);
+        });
+      }
+    };
   }, []);
 
   const handleUpdateRole = async (userId: string, newRole: 'admin' | 'agent' | 'supervisor') => {
@@ -305,7 +359,7 @@ export function TeamView() {
 
   return (
     <div className="h-full overflow-y-auto theme-bg-primary select-none">
-      <div className="max-w-5xl mx-auto px-6 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -335,90 +389,150 @@ export function TeamView() {
           </div>
         )}
 
-        {/* Team Members List */}
-        <div className="rounded-2xl border theme-border bg-white dark:bg-zinc-900/35 overflow-hidden shadow-sm">
-          <div className="grid grid-cols-12 gap-4 bg-zinc-50 dark:bg-white/[0.015] px-5 py-3.5 text-[9px] font-bold uppercase tracking-wider theme-text-muted border-b theme-border font-display">
-            <div className="col-span-4">Team Member</div>
-            <div className="col-span-2">Status</div>
-            <div className="col-span-3">Workspace Role</div>
-            <div className="col-span-3">Ticket Access Scope</div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Team Members List */}
+          <div className="lg:col-span-8 space-y-6">
+            <div className="rounded-2xl border theme-border bg-white dark:bg-zinc-900/35 overflow-hidden shadow-sm">
+              <div className="grid grid-cols-12 gap-4 bg-zinc-50 dark:bg-white/[0.015] px-5 py-3.5 text-[9px] font-bold uppercase tracking-wider theme-text-muted border-b theme-border font-display">
+                <div className="col-span-4">Team Member</div>
+                <div className="col-span-2">Status</div>
+                <div className="col-span-3">Workspace Role</div>
+                <div className="col-span-3">Ticket Access Scope</div>
+              </div>
+
+              <div className="divide-y theme-border-extra-subtle">
+                {users.map(u => {
+                  const isSelf = u.id === currentAgent.id;
+                  const scope = accessScopes[u.id] || 'all';
+
+                  const isUpdatingRole = saving === u.id;
+                  const isSavedRole = saved === u.id;
+                  const isUpdatingScope = saving === (u.id + '_scope');
+                  const isSavedScope = saved === (u.id + '_scope');
+
+                  return (
+                    <div key={u.id} className="grid grid-cols-12 gap-4 px-5 py-3.5 items-center hover:bg-zinc-50/40 dark:hover:bg-white/[0.005] transition-all duration-200">
+                      
+                      {/* Name / Email */}
+                      <div className="col-span-4 flex items-center gap-3 min-w-0">
+                        <Avatar size="sm">
+                          {u.avatar_url ? <AvatarImage src={u.avatar_url} alt={u.full_name} /> : null}
+                          <AvatarFallback>{u.full_name.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold theme-text-main truncate leading-none">{u.full_name}</span>
+                            {isSelf && (
+                              <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase px-1 py-0.5 rounded leading-none">You</span>
+                            )}
+                          </div>
+                          <span className="text-[10px] theme-text-muted truncate block mt-1">{u.email}</span>
+                        </div>
+                      </div>
+
+                      {/* Status Indicator */}
+                      <div className="col-span-2 flex flex-col justify-center gap-0.5">
+                        {(() => {
+                          const activeOnline = isSelf ? (agentStatus === 'online' || agentStatus === 'busy') : u.is_online;
+                          const activeStatus = isSelf ? agentStatus : (u.is_online ? 'online' : 'offline');
+                          
+                          const label = activeStatus === 'online' ? 'Online' : 
+                                        activeStatus === 'busy' ? 'Busy' : 
+                                        activeStatus === 'break' ? 'Break' : 'Offline';
+                                        
+                          const dotColor = activeStatus === 'online' ? 'bg-emerald-500' : 
+                                           activeStatus === 'busy' ? 'bg-rose-500' : 
+                                           activeStatus === 'break' ? 'bg-amber-500' : 'bg-zinc-500';
+                                           
+                          const textColor = activeStatus === 'online' ? 'text-emerald-600 dark:text-emerald-400' : 
+                                            activeStatus === 'busy' ? 'text-rose-500' : 
+                                            activeStatus === 'break' ? 'text-amber-500' : 'theme-text-muted';
+
+                          if (activeOnline || activeStatus === 'break') {
+                            return (
+                              <div className={`flex items-center gap-1.5 font-bold text-[11px] ${textColor}`}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${dotColor} ${activeOnline ? 'animate-pulse' : ''}`} />
+                                {label}
+                              </div>
+                            );
+                          } else {
+                            const lastSeen = isSelf ? new Date().toISOString() : u.last_seen_at;
+                            return (
+                              <div className="flex flex-col">
+                                <span className="text-[11px] theme-text-muted font-bold">Offline</span>
+                                {lastSeen && (
+                                  <span className="text-[9px] theme-text-muted-darker">
+                                    {formatDistanceToNow(new Date(lastSeen), { addSuffix: true })}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          }
+                        })()}
+                      </div>
+
+                      {/* Role Selector */}
+                      <div className="col-span-3 flex items-center gap-2">
+                        <TeamRoleSelect
+                          role={u.role}
+                          disabled={isSelf}
+                          onChange={(newRole) => handleUpdateRole(u.id, newRole)}
+                        />
+
+                        {isUpdatingRole && <Loader className="h-3.5 w-3.5 text-emerald-400 animate-spin" />}
+                        {isSavedRole && <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />}
+                      </div>
+
+                      {/* Access Scope Selector */}
+                      <div className="col-span-3 flex items-center gap-2">
+                        <TeamAccessScopeSelect
+                          scope={scope}
+                          disabled={isSelf}
+                          onChange={(newScope) => handleUpdateAccessScope(u.id, newScope)}
+                        />
+
+                        {isUpdatingScope && <Loader className="h-3.5 w-3.5 text-emerald-400 animate-spin" />}
+                        {isSavedScope && <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />}
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          <div className="divide-y theme-border-extra-subtle">
-            {users.map(u => {
-              const isSelf = u.id === currentAgent.id;
-              const scope = accessScopes[u.id] || 'all';
-              const isUpdatingRole = saving === u.id;
-              const isUpdatingScope = saving === (u.id + '_scope');
-              const isSavedRole = saved === u.id;
-              const isSavedScope = saved === (u.id + '_scope');
-
-              return (
-                <div key={u.id} className="grid grid-cols-12 gap-4 px-5 py-3.5 theme-bg-hover hover:theme-bg-active items-center transition-all border-b theme-border-extra-subtle last:border-none">
-                  
-                  {/* Avatar & Info */}
-                  <div className="col-span-4 flex items-center gap-3 min-w-0">
-                    <Avatar size="sm">
-                      {u.avatar_url ? <AvatarImage src={u.avatar_url} alt={u.full_name || ''} /> : null}
-                      <AvatarFallback>{(u.full_name || '?').charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="font-semibold theme-text-main truncate flex items-center gap-1.5">
-                        {u.full_name}
-                        {isSelf && (
-                          <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 px-1.5 py-0.5 rounded uppercase">You</span>
-                        )}
-                      </p>
-                      <p className="text-[10px] theme-text-muted truncate mt-0.5 font-mono">{u.email}</p>
-                    </div>
-                  </div>
-
-                  {/* Status Indicator */}
-                  <div className="col-span-2 flex flex-col justify-center gap-0.5">
-                    {u.is_online ? (
-                      <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Online
-                      </div>
-                    ) : (
-                      <div className="flex flex-col">
-                        <span className="text-[11px] theme-text-muted font-bold">Offline</span>
-                        {u.last_seen_at && (
-                          <span className="text-[9px] theme-text-muted-darker">
-                            {formatDistanceToNow(new Date(u.last_seen_at), { addSuffix: true })}
+          {/* Right Column: Activity Tracker */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="rounded-2xl border theme-border bg-white dark:bg-zinc-900/35 p-5 shadow-sm space-y-4 h-fit max-h-[600px] flex flex-col">
+              <div className="flex items-center justify-between pb-3 border-b theme-border shrink-0">
+                <h3 className="text-xs font-bold uppercase tracking-wider theme-text-main font-display">Activity Tracker</h3>
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
+              
+              <div className="space-y-3.5 overflow-y-auto pr-1 flex-1">
+                {statusActivities.length === 0 ? (
+                  <p className="text-[10px] theme-text-muted text-center py-6">No recent status activities logged.</p>
+                ) : (
+                  statusActivities.map(act => (
+                    <div key={act.id} className="flex gap-2.5 items-start text-[10px] leading-relaxed border-b theme-border border-dashed pb-2 last:border-0 last:pb-0">
+                      <span className={`h-1.5 w-1.5 rounded-full shrink-0 mt-1.5 ${getStatusDotColor(act.status)}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-baseline gap-1">
+                          <p className="theme-text-main font-bold truncate">{act.user_name}</p>
+                          <span className="text-[8px] theme-text-muted shrink-0">
+                            {formatDistanceToNow(new Date(act.created_at), { addSuffix: true })}
                           </span>
-                        )}
+                        </div>
+                        <p className="theme-text-secondary mt-0.5">
+                          Changed status to <span className="capitalize font-bold theme-text-main">{act.status}</span>
+                        </p>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Role Selector */}
-                  <div className="col-span-3 flex items-center gap-2">
-                    <TeamRoleSelect
-                      role={u.role}
-                      disabled={isSelf}
-                      onChange={(newRole) => handleUpdateRole(u.id, newRole)}
-                    />
-
-                    {isUpdatingRole && <Loader className="h-3.5 w-3.5 text-emerald-400 animate-spin" />}
-                    {isSavedRole && <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />}
-                  </div>
-
-                  {/* Access Scope Selector */}
-                  <div className="col-span-3 flex items-center gap-2">
-                    <TeamAccessScopeSelect
-                      scope={scope}
-                      disabled={isSelf}
-                      onChange={(newScope) => handleUpdateAccessScope(u.id, newScope)}
-                    />
-
-                    {isUpdatingScope && <Loader className="h-3.5 w-3.5 text-emerald-400 animate-spin" />}
-                    {isSavedScope && <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />}
-                  </div>
-
-                </div>
-              );
-            })}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
