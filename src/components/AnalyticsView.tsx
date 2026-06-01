@@ -201,6 +201,7 @@ export function AnalyticsView() {
           intent,
           sentiment_score,
           created_at,
+          resolved_at,
           assigned_agent_id,
           metadata,
           channel:channels(channel_type)
@@ -229,6 +230,18 @@ export function AnalyticsView() {
         .select('id, full_name, role')
         .order('full_name', { ascending: true });
 
+      const fromTime = dateFrom ? parseLocalDate(dateFrom).getTime() : null;
+      const toTime = dateTo ? (() => { const d = parseLocalDate(dateTo); d.setHours(23, 59, 59, 999); return d.getTime(); })() : null;
+
+      const isTimeInDateRange = (timestampStr: string | null | undefined, fallbackTimestampStr?: string | null | undefined) => {
+        const timeStr = timestampStr || fallbackTimestampStr;
+        if (!timeStr) return true;
+        const t = new Date(timeStr).getTime();
+        if (fromTime && t < fromTime) return false;
+        if (toTime && t > toTime) return false;
+        return true;
+      };
+
       // 1. Calculate General Metrics
       const total = convs.length;
       const resolved = convs.filter(c => c.status === 'resolved').length;
@@ -240,13 +253,13 @@ export function AnalyticsView() {
         const meta = (c as any).metadata || {};
 
         // Legacy: single csat object in metadata
-        if (meta.csat?.score != null) {
+        if (meta.csat?.score != null && isTimeInDateRange(meta.csat.responded_at || meta.csat.submitted_at || meta.csat.created_at, c.resolved_at || c.created_at)) {
           allCsatScores.push(Number(meta.csat.score));
         }
         // New: csat_history array (preserves multiple ratings per conversation)
         if (meta.csat_history && Array.isArray(meta.csat_history)) {
           meta.csat_history.forEach((entry: any) => {
-            if (entry?.score != null) {
+            if (entry?.score != null && isTimeInDateRange(entry.responded_at || entry.submitted_at, c.resolved_at || c.created_at)) {
               allCsatScores.push(Number(entry.score));
             }
           });
@@ -254,10 +267,10 @@ export function AnalyticsView() {
         // Archived: csat inside ticket_history entries
         if (meta.ticket_history && Array.isArray(meta.ticket_history)) {
           meta.ticket_history.forEach((h: any) => {
-            if (h.csat?.score != null) {
+            if (h.csat?.score != null && isTimeInDateRange(h.resolved_at || h.created_at, c.resolved_at || c.created_at)) {
               allCsatScores.push(Number(h.csat.score));
             }
-            if (h.csat_pending?.resolved && h.csat_pending?.score != null) {
+            if (h.csat_pending?.resolved && h.csat_pending?.score != null && isTimeInDateRange(h.csat_pending.responded_at || h.resolved_at, c.resolved_at || c.created_at)) {
               allCsatScores.push(Number(h.csat_pending.score));
             }
           });
@@ -507,12 +520,12 @@ export function AnalyticsView() {
               if (s >= 1 && s <= 5) (agentDist as any)[s]++;
             };
 
-            if (resolverId === agent.id && meta.csat?.score != null) {
+            if (resolverId === agent.id && meta.csat?.score != null && isTimeInDateRange(meta.csat.responded_at || meta.csat.submitted_at || meta.csat.created_at, c.resolved_at || c.created_at)) {
               collectScore(Number(meta.csat.score));
             }
             if (meta.csat_history && Array.isArray(meta.csat_history)) {
               meta.csat_history.forEach((entry: any) => {
-                if (entry?.resolved_by === agent.id && entry?.score != null) {
+                if (entry?.resolved_by === agent.id && entry?.score != null && isTimeInDateRange(entry.responded_at || entry.submitted_at, c.resolved_at || c.created_at)) {
                   collectScore(Number(entry.score));
                 }
               });
@@ -520,10 +533,10 @@ export function AnalyticsView() {
             if (meta.ticket_history && Array.isArray(meta.ticket_history)) {
               meta.ticket_history.forEach((h: any) => {
                 const historyResolverId = getHistoryResolverId(c, h);
-                if (historyResolverId === agent.id && h.csat?.score != null) {
+                if (historyResolverId === agent.id && h.csat?.score != null && isTimeInDateRange(h.resolved_at || h.created_at, c.resolved_at || c.created_at)) {
                   collectScore(Number(h.csat.score));
                 }
-                if (historyResolverId === agent.id && h.csat_pending?.resolved && h.csat_pending?.score != null) {
+                if (historyResolverId === agent.id && h.csat_pending?.resolved && h.csat_pending?.score != null && isTimeInDateRange(h.csat_pending.responded_at || h.resolved_at, c.resolved_at || c.created_at)) {
                   collectScore(Number(h.csat_pending.score));
                 }
               });
@@ -567,13 +580,13 @@ export function AnalyticsView() {
           };
 
           // Legacy: single csat object
-          if (resolverId === currentAgent.id && meta.csat?.score != null) {
+          if (resolverId === currentAgent.id && meta.csat?.score != null && isTimeInDateRange(meta.csat.responded_at || meta.csat.submitted_at || meta.csat.created_at, c.resolved_at || c.created_at)) {
             collectScore(Number(meta.csat.score));
           }
           // New: csat_history array
           if (meta.csat_history && Array.isArray(meta.csat_history)) {
             meta.csat_history.forEach((entry: any) => {
-              if (entry?.resolved_by === currentAgent.id && entry?.score != null) {
+              if (entry?.resolved_by === currentAgent.id && entry?.score != null && isTimeInDateRange(entry.responded_at || entry.submitted_at, c.resolved_at || c.created_at)) {
                 collectScore(Number(entry.score));
               }
             });
@@ -582,10 +595,10 @@ export function AnalyticsView() {
           if (meta.ticket_history && Array.isArray(meta.ticket_history)) {
             meta.ticket_history.forEach((h: any) => {
               const historyResolverId = getHistoryResolverId(c, h);
-              if (historyResolverId === currentAgent.id && h.csat?.score != null) {
+              if (historyResolverId === currentAgent.id && h.csat?.score != null && isTimeInDateRange(h.resolved_at || h.created_at, c.resolved_at || c.created_at)) {
                 collectScore(Number(h.csat.score));
               }
-              if (historyResolverId === currentAgent.id && h.csat_pending?.resolved && h.csat_pending?.score != null) {
+              if (historyResolverId === currentAgent.id && h.csat_pending?.resolved && h.csat_pending?.score != null && isTimeInDateRange(h.csat_pending.responded_at || h.resolved_at, c.resolved_at || c.created_at)) {
                 collectScore(Number(h.csat_pending.score));
               }
             });
